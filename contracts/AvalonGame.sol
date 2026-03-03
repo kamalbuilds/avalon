@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract AvaForgeGame is Ownable, Pausable, ReentrancyGuard {
+contract AvalonGame is Ownable, Pausable, ReentrancyGuard {
     enum GameState { WAITING, ACTIVE, COMPLETED, CANCELLED }
 
     struct Player {
@@ -45,12 +45,12 @@ contract AvaForgeGame is Ownable, Pausable, ReentrancyGuard {
     event GameCancelled();
 
     modifier onlyRegistered() {
-        require(players[msg.sender].registered, "AvaForgeGame: not registered");
+        require(players[msg.sender].registered, "AvalonGame: not registered");
         _;
     }
 
     modifier inState(GameState _state) {
-        require(state == _state, "AvaForgeGame: wrong state");
+        require(state == _state, "AvalonGame: wrong state");
         _;
     }
 
@@ -65,11 +65,11 @@ contract AvaForgeGame is Ownable, Pausable, ReentrancyGuard {
     }
 
     function registerPlayer() external payable inState(GameState.WAITING) whenNotPaused {
-        require(!players[msg.sender].registered, "AvaForgeGame: already registered");
-        require(playerList.length < config.maxPlayers, "AvaForgeGame: game full");
+        require(!players[msg.sender].registered, "AvalonGame: already registered");
+        require(playerList.length < config.maxPlayers, "AvalonGame: game full");
 
         if (config.entryFee > 0 && !config.stablecoinEnabled) {
-            require(msg.value >= config.entryFee, "AvaForgeGame: insufficient fee");
+            require(msg.value >= config.entryFee, "AvalonGame: insufficient fee");
         }
 
         players[msg.sender] = Player({
@@ -84,7 +84,7 @@ contract AvaForgeGame is Ownable, Pausable, ReentrancyGuard {
     }
 
     function startGame() external onlyOwner inState(GameState.WAITING) {
-        require(playerList.length >= 2, "AvaForgeGame: need >= 2 players");
+        require(playerList.length >= 2, "AvalonGame: need >= 2 players");
         state = GameState.ACTIVE;
         currentRound = 1;
         roundStartTime = block.timestamp;
@@ -101,7 +101,7 @@ contract AvaForgeGame is Ownable, Pausable, ReentrancyGuard {
         address player,
         uint256 scoreChange
     ) external onlyOwner inState(GameState.ACTIVE) {
-        require(players[player].registered, "AvaForgeGame: player not registered");
+        require(players[player].registered, "AvalonGame: player not registered");
 
         players[player].score += scoreChange;
         emit MoveExecuted(player, currentRound);
@@ -111,7 +111,7 @@ contract AvaForgeGame is Ownable, Pausable, ReentrancyGuard {
     function nextRound() external onlyOwner inState(GameState.ACTIVE) {
         require(
             block.timestamp >= roundStartTime + config.roundDuration,
-            "AvaForgeGame: round not over"
+            "AvalonGame: round not over"
         );
 
         currentRound++;
@@ -120,21 +120,21 @@ contract AvaForgeGame is Ownable, Pausable, ReentrancyGuard {
     }
 
     function completeGame(address winner) external onlyOwner inState(GameState.ACTIVE) nonReentrant {
-        require(players[winner].registered, "AvaForgeGame: winner not registered");
+        require(players[winner].registered, "AvalonGame: winner not registered");
 
         state = GameState.COMPLETED;
 
         uint256 prize = address(this).balance;
         if (prize > 0) {
             (bool sent, ) = winner.call{value: prize}("");
-            require(sent, "AvaForgeGame: prize transfer failed");
+            require(sent, "AvalonGame: prize transfer failed");
         }
 
         emit GameCompleted(winner, prize);
     }
 
     function cancelGame() external onlyOwner nonReentrant {
-        require(state == GameState.WAITING || state == GameState.ACTIVE, "AvaForgeGame: cannot cancel");
+        require(state == GameState.WAITING || state == GameState.ACTIVE, "AvalonGame: cannot cancel");
 
         state = GameState.CANCELLED;
 
@@ -142,7 +142,7 @@ contract AvaForgeGame is Ownable, Pausable, ReentrancyGuard {
         if (config.entryFee > 0 && !config.stablecoinEnabled) {
             for (uint256 i = 0; i < playerList.length; i++) {
                 (bool sent, ) = playerList[i].call{value: config.entryFee}("");
-                require(sent, "AvaForgeGame: refund failed");
+                require(sent, "AvalonGame: refund failed");
             }
         }
 
@@ -166,7 +166,7 @@ contract AvaForgeGame is Ownable, Pausable, ReentrancyGuard {
     }
 
     function getPlayerScore(address player) external view returns (uint256) {
-        require(players[player].registered, "AvaForgeGame: not registered");
+        require(players[player].registered, "AvalonGame: not registered");
         return players[player].score;
     }
 

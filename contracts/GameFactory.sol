@@ -42,7 +42,7 @@ contract GameFactory is Ownable, ReentrancyGuard {
         gameId = gameCount++;
 
         // Deploy a minimal proxy or record the game
-        // In production, this would deploy an AvaForgeGame clone
+        // In production, this would deploy an AvalonGame clone
         games[gameId] = GameInfo({
             gameAddress: address(0), // Set after deployment
             name: name,

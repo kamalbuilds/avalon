@@ -35,7 +35,7 @@ contract AgentRegistry is ERC721Enumerable, Ownable {
     event ValidatorAuthorized(address indexed validator);
     event ValidatorRevoked(address indexed validator);
 
-    constructor() ERC721("AvaForge Agent", "AGENT") Ownable(msg.sender) {}
+    constructor() ERC721("Avalon Agent", "AGENT") Ownable(msg.sender) {}
 
     // --- Identity Registry ---
 
