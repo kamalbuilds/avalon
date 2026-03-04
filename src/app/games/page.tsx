@@ -52,22 +52,28 @@ export default function GamesPage() {
   // Coming soon games
   const comingSoonGames = [
     {
-      id: "ai-arena",
-      name: "AI Arena",
-      description: "Train your ERC-8004 AI agents and pit them against others in automated arena combat. Agents learn from every fight.",
+      id: "crypto-dungeons",
+      name: "Crypto Dungeons",
+      icon: "\uD83C\uDFF0",
+      description: "Procedurally generated dungeons with ERC-8004 boss NPCs and VRF loot drops.",
       status: "draft" as GameStatus,
+      accentColor: "#B026FF",
+    },
+    {
+      id: "avalanche-legends",
+      name: "Avalanche Legends",
+      icon: "\u26A1",
+      description: "Last player standing wins the prize pool. Every NPC is an autonomous agent with a wallet.",
+      status: "draft" as GameStatus,
+      accentColor: "#e84142",
     },
     {
       id: "loot-realm",
       name: "Loot Realm",
-      description: "Explore procedurally generated dungeons with Chainlink VRF loot drops. Every item is provably fair and tradeable.",
+      icon: "\uD83D\uDC8E",
+      description: "Build a merchant empire. Trade with AI NPCs. Earn USDT from stablecoin economies.",
       status: "draft" as GameStatus,
-    },
-    {
-      id: "chain-racers",
-      name: "Chain Racers",
-      description: "High-speed racing with on-chain leaderboards, customizable vehicles as NFTs, and USDT prize pools.",
-      status: "draft" as GameStatus,
+      accentColor: "#FFE600",
     },
   ];
 
@@ -157,10 +163,20 @@ export default function GamesPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + i * 0.08, duration: 0.4 }}
           >
-            <Card className="group overflow-hidden p-0 opacity-75">
+            <Card className="group overflow-hidden p-0 hover:border-border-bright transition-colors duration-300">
               {/* Banner */}
               <div className="relative h-40 bg-gradient-to-br from-surface-2 via-card to-card overflow-hidden">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(99,102,241,0.1),transparent_60%)]" />
+                <div
+                  className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-300"
+                  style={{
+                    background: `radial-gradient(circle at 50% 120%, ${game.accentColor}30, transparent 60%)`,
+                  }}
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-5xl opacity-60 group-hover:opacity-80 group-hover:scale-110 transition-all duration-300">
+                    {game.icon}
+                  </span>
+                </div>
                 <div className="absolute top-3 right-3">
                   <Badge variant="default">
                     <Clock className="mr-1 h-3 w-3" />
@@ -171,16 +187,25 @@ export default function GamesPage() {
 
               {/* Info */}
               <div className="p-5">
-                <h3 className="text-lg font-semibold text-muted">
+                <h3
+                  className="text-lg font-semibold group-hover:transition-colors duration-200"
+                  style={{ color: game.accentColor }}
+                >
                   {game.name}
                 </h3>
                 <p className="mt-2 text-sm text-muted/70 line-clamp-2">
                   {game.description}
                 </p>
-                <div className="mt-4">
+                <div className="mt-4 flex items-center justify-between">
                   <Badge variant="default" className="text-xs">
                     In Development
                   </Badge>
+                  <button
+                    className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border-bright/50 text-text-secondary hover:text-text-primary hover:border-border-bright transition-colors duration-200 cursor-pointer"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    Join Waitlist
+                  </button>
                 </div>
               </div>
             </Card>
