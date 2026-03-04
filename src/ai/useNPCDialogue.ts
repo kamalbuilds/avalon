@@ -21,6 +21,9 @@ export type DialogueMoment =
   | 'low_hp'
   | 'opponent_low_hp'
   | 'big_move_incoming'
+  | 'player_shielding'
+  | 'coin_rich'
+  | 'dominating'
   | 'win'
   | 'lose';
 
@@ -45,6 +48,9 @@ interface DialogueBank {
   low_hp: string[];
   opponent_low_hp: string[];
   big_move_incoming: string[];
+  player_shielding: string[];
+  coin_rich: string[];
+  dominating: string[];
   win: string[];
   lose: string[];
 }
@@ -55,11 +61,14 @@ const ARIA_DIALOGUE: DialogueBank = {
   took_damage: ['That\'ll cost you interest!', 'You call that an investment? Cheap shot.', 'Noted. I\'ll add it to your tab.'],
   dealt_damage: ['Consider that a service fee.', 'Premium pricing.', 'That one\'s on the house.'],
   shield_block: ['Insurance pays off!', 'Hedged that perfectly.', 'Risk management at its finest.'],
-  counter_success: ['Counter-offer ACCEPTED.', 'The market corrects itself.', 'You just got audited.'],
+  counter_success: ['Counter-offer ACCEPTED.', 'The market corrects itself.', 'You just got audited.', 'Hostile takeover complete.', 'That was a leveraged buyout.', 'Your portfolio just crashed.'],
   counter_whiff: ['Bad trade... bad trade...', 'Miscalculated the timing.', 'Sometimes the market lies.'],
   low_hp: ['Running low on capital...', 'Time to cut my losses.', 'Need a bailout here.'],
   opponent_low_hp: ['Your stock is crashing.', 'Time to close this deal.', 'Going once... going twice...'],
   big_move_incoming: ['That\'s a big investment. Hope it pays off for you.', 'I see your play. Interesting.', 'Heavy spending? I approve.'],
+  player_shielding: ['Hiding behind a shield? That\'s not profitable.', 'Defensive spending? Boring.', 'You can\'t shield from bankruptcy.'],
+  coin_rich: ['Look at my treasury! Overflowing.', 'Time to make it rain. Premium moves only.', 'With this capital? I can buy your defeat outright.'],
+  dominating: ['Your stock is in freefall. Mine is soaring.', 'This is what a bull market looks like.', 'Accept the loss. It\'s a write-off at this point.'],
   win: ['Profit secured. Pleasure doing business.', 'Your defeat was a sound investment.', 'The market always wins. And I AM the market.'],
   lose: ['Sometimes you lose the trade. I\'ll be back.', 'Bad quarter. Won\'t happen again.', 'Consider this a lesson in humility.'],
 };
@@ -70,11 +79,14 @@ const KAEL_DIALOGUE: DialogueBank = {
   took_damage: ['Is that all?!', 'You\'ll have to hit harder than THAT.', 'Pain is fuel!'],
   dealt_damage: ['CRUSH!', 'Feel that?!', 'That\'s just the beginning!'],
   shield_block: ['Pathetic shield.', 'You can\'t hide forever!', 'Shields break. You will too.'],
-  counter_success: ['Countered? That takes no skill.', 'Fine. I\'ll just hit harder.', 'Lucky shot.'],
+  counter_success: ['Countered? That takes no skill.', 'Fine. I\'ll just hit harder.', 'Lucky shot.', 'You walked right into that!', 'Predictable. Like all weaklings.', 'Counter? More like CRUSHING blow!'],
   counter_whiff: ['HA! Nice try.', 'Wasted your move!', 'Counter THIS.'],
   low_hp: ['Grr... I\'m not done yet!', 'Pain only makes me ANGRIER!', 'You think this stops me?!'],
   opponent_low_hp: ['You\'re FINISHED!', 'One more hit!', 'FALL!'],
   big_move_incoming: ['Bring it!', 'I don\'t dodge. I TANK.', 'Let it come!'],
+  player_shielding: ['Shields are for COWARDS!', 'Stop hiding and FIGHT me!', 'That shield won\'t save you!'],
+  coin_rich: ['All this power! Time to unleash EVERYTHING!', 'Loaded up. Devastation incoming.', 'Maximum force. No holding back!'],
+  dominating: ['You call yourself a fighter?!', 'KNEEL before me!', 'This is what real strength looks like!'],
   win: ['Too easy. Next!', 'Victory through superior force.', 'Another one falls.'],
   lose: ['This isn\'t over!', 'I\'ll be stronger next time.', 'You got lucky. LUCKY.'],
 };
