@@ -49,9 +49,9 @@ export default function PlayPage({
 
           {game && (
             <div className="flex items-center justify-center gap-4 text-xs font-mono text-text-muted mb-6">
-              <span>{game.players} players</span>
+              <span>{game.state.playerCount} players</span>
               <span className="text-border-bright">|</span>
-              <span>{game.status === "active" ? "Live" : game.status}</span>
+              <span>{game.state.status === "live" ? "Live" : game.state.status}</span>
             </div>
           )}
 
