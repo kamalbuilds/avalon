@@ -142,9 +142,13 @@ contract LootVRF is VRFConsumerBaseV2Plus {
         return Rarity.Common;
     }
 
-    // --- Admin ---
+    // --- Admin (owner-only via ConfirmedOwner from VRFConsumerBaseV2Plus) ---
 
-    function setLootTable(uint256 gameId, LootTable calldata table) external {
+    function setSubscriptionId(uint256 _subscriptionId) external onlyOwner {
+        subscriptionId = _subscriptionId;
+    }
+
+    function setLootTable(uint256 gameId, LootTable calldata table) external onlyOwner {
         require(
             table.commonRate + table.uncommonRate + table.rareRate + table.epicRate + table.legendaryRate == 10000,
             "LootVRF: rates must sum to 10000"
@@ -153,21 +157,21 @@ contract LootVRF is VRFConsumerBaseV2Plus {
         emit LootTableUpdated(gameId, table);
     }
 
-    function authorizeGame(address game) external {
+    function authorizeGame(address game) external onlyOwner {
         authorizedGames[game] = true;
         emit GameAuthorized(game);
     }
 
-    function revokeGame(address game) external {
+    function revokeGame(address game) external onlyOwner {
         authorizedGames[game] = false;
         emit GameRevoked(game);
     }
 
-    function setCallbackGasLimit(uint32 _gasLimit) external {
+    function setCallbackGasLimit(uint32 _gasLimit) external onlyOwner {
         callbackGasLimit = _gasLimit;
     }
 
-    function setRequestConfirmations(uint16 _confirmations) external {
+    function setRequestConfirmations(uint16 _confirmations) external onlyOwner {
         requestConfirmations = _confirmations;
     }
 

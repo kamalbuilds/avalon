@@ -1,9 +1,9 @@
 {
   "network": "fuji",
-  "timestamp": "2026-03-04T00:08:16.920Z",
+  "timestamp": "2026-03-04T00:53:11.169Z",
   "gameFactory": "0x3f7FC08150709C22F1741A230351B59c36bCCc8a",
   "agentRegistry": "0x2636Ed9F3Aa33589810BE07B48ad9Be79de3Fd7F",
-  "lootVRF": "0xcd8D3bFb6757504896a9320Dcb451e20d4baa74B",
+  "lootVRF": "0xc39d9Ec925d3AA6E67FE760630406696408724f8",
   "stablecoinEconomy": "0x95B4b7d7a23d954BF92FeDF2e00A374E22208D69",
   "chronosBattle": "0xafA4230B7154d95F1c8Bc13AD443b2e50bde7C57"
 }
