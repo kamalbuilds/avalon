@@ -1,26 +1,372 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* =========================================================================
+   Avalon — Dark Gaming Theme (Cyberpunk / Neon)
+   ========================================================================= */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Base */
+  --background: #050508;
+  --foreground: #E4E4E7;
+  --surface: #0A0A10;
+  --surface-2: #12121C;
+  --surface-3: #1A1A28;
+  --card: #111118;
+  --card-hover: #16161f;
+  --card-foreground: #E4E4E7;
+  --border: #1E1E2E;
+  --border-bright: #2A2A40;
+
+  /* Neon Accent Palette */
+  --neon-cyan: #00F0FF;
+  --neon-magenta: #FF00E5;
+  --neon-green: #39FF14;
+  --neon-orange: #FF6B00;
+  --neon-purple: #B026FF;
+  --neon-red: #FF1744;
+  --neon-yellow: #FFE600;
+
+  /* Avalanche Red */
+  --avalanche: #e84142;
+
+  /* Primary = Cyan */
+  --primary: #00F0FF;
+  --primary-dim: #00A8B3;
+  --primary-glow: rgba(0, 240, 255, 0.15);
+  --primary-foreground: #050508;
+
+  /* Secondary = Magenta */
+  --secondary: #FF00E5;
+  --secondary-dim: #B300A0;
+  --secondary-glow: rgba(255, 0, 229, 0.15);
+  --secondary-foreground: #050508;
+
+  /* Accent (indigo for UI controls) */
+  --accent: #818cf8;
+  --accent-hover: #6366f1;
+  --accent-muted: rgba(99, 102, 241, 0.15);
+  --accent-foreground: #050508;
+
+  /* shadcn compat */
+  --popover: #111118;
+  --popover-foreground: #E4E4E7;
+  --muted: #71717a;
+  --muted-foreground: #A1A1AA;
+  --destructive: #FF1744;
+  --input: #1E1E2E;
+  --ring: #818cf8;
+  --radius: 0.625rem;
+
+  /* Text */
+  --text-primary: #F4F4F5;
+  --text-secondary: #A1A1AA;
+  --text-muted: #52525B;
+
+  /* Status */
+  --success: #39FF14;
+  --warning: #FFE600;
+  --danger: #FF1744;
+  --error: #FF1744;
+  --info: #00F0FF;
+
+  /* Rarity */
+  --rarity-common: #9CA3AF;
+  --rarity-uncommon: #22C55E;
+  --rarity-rare: #3B82F6;
+  --rarity-epic: #A855F7;
+  --rarity-legendary: #F59E0B;
+
+  /* Gold */
+  --gold: #f59e0b;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-card: var(--card);
+  --color-card-hover: var(--card-hover);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-border-bright: var(--border-bright);
+  --color-primary: var(--primary);
+  --color-primary-dim: var(--primary-dim);
+  --color-primary-glow: var(--primary-glow);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-dim: var(--secondary-dim);
+  --color-secondary-glow: var(--secondary-glow);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-neon-cyan: var(--neon-cyan);
+  --color-neon-magenta: var(--neon-magenta);
+  --color-neon-green: var(--neon-green);
+  --color-neon-orange: var(--neon-orange);
+  --color-neon-purple: var(--neon-purple);
+  --color-neon-red: var(--neon-red);
+  --color-neon-yellow: var(--neon-yellow);
+  --color-avalanche: var(--avalanche);
+  --color-gold: var(--gold);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-error: var(--error);
+  --color-info: var(--info);
+  --color-rarity-common: var(--rarity-common);
+  --color-rarity-uncommon: var(--rarity-uncommon);
+  --color-rarity-rare: var(--rarity-rare);
+  --color-rarity-epic: var(--rarity-epic);
+  --color-rarity-legendary: var(--rarity-legendary);
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), monospace;
+  --radius: 0.625rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* =========================================================================
+   Base Styles
+   ========================================================================= */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans), system-ui, sans-serif;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* =========================================================================
+   Glow Effects
+   ========================================================================= */
+
+.glow-border {
+  box-shadow: 0 0 0 1px var(--border), 0 0 15px -3px var(--primary-glow);
+}
+.glow-border:hover {
+  box-shadow: 0 0 0 1px var(--primary-dim), 0 0 25px -3px rgba(0, 240, 255, 0.3);
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 10px #00F0FF, 0 0 20px #00F0FF80, 0 0 40px #00F0FF40;
+}
+.text-glow-red {
+  text-shadow: 0 0 10px #e84142, 0 0 20px #e8414280, 0 0 40px #e8414240;
+}
+.text-glow-purple {
+  text-shadow: 0 0 10px #B026FF, 0 0 20px #B026FF80, 0 0 40px #B026FF40;
+}
+.text-glow-green {
+  text-shadow: 0 0 10px #39FF14, 0 0 20px #39FF1480, 0 0 40px #39FF1440;
+}
+.text-glow-gold {
+  text-shadow: 0 0 10px #f59e0b, 0 0 20px #f59e0b80, 0 0 40px #f59e0b40;
+}
+.text-glow-magenta {
+  text-shadow: 0 0 10px #FF00E5, 0 0 20px #FF00E580, 0 0 40px #FF00E540;
+}
+.glow-text {
+  text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+}
+
+.border-glow-cyan {
+  box-shadow: 0 0 5px #00F0FF, 0 0 10px #00F0FF40, inset 0 0 5px #00F0FF20;
+}
+.border-glow-red {
+  box-shadow: 0 0 5px #e84142, 0 0 10px #e8414240, inset 0 0 5px #e8414220;
+}
+.border-glow-purple {
+  box-shadow: 0 0 5px #B026FF, 0 0 10px #B026FF40, inset 0 0 5px #B026FF20;
+}
+.border-glow-green {
+  box-shadow: 0 0 5px #39FF14, 0 0 10px #39FF1440, inset 0 0 5px #39FF1420;
+}
+
+.box-glow-cyan {
+  box-shadow: 0 0 15px #00F0FF, 0 0 30px #00F0FF40, 0 0 60px #00F0FF20;
+}
+.box-glow-red {
+  box-shadow: 0 0 15px #e84142, 0 0 30px #e8414240, 0 0 60px #e8414220;
+}
+.box-glow-purple {
+  box-shadow: 0 0 15px #B026FF, 0 0 30px #B026FF40, 0 0 60px #B026FF20;
+}
+
+/* =========================================================================
+   Gradient Backgrounds
+   ========================================================================= */
+
+.bg-hero-gradient {
+  background: radial-gradient(ellipse at top, #1a0a2e 0%, #0a0a10 40%, #050508 100%);
+}
+
+.bg-card-gradient {
+  background: linear-gradient(135deg, #0f0f18 0%, #151520 100%);
+}
+
+.bg-button-gradient {
+  background: linear-gradient(135deg, #e84142 0%, #B026FF 100%);
+}
+
+.bg-mesh-gradient {
+  background:
+    radial-gradient(at 20% 20%, #B026FF15 0%, transparent 50%),
+    radial-gradient(at 80% 80%, #00F0FF15 0%, transparent 50%),
+    radial-gradient(at 50% 50%, #e8414210 0%, transparent 50%),
+    #050508;
+}
+
+/* =========================================================================
+   Animations
+   ========================================================================= */
+
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.animated-border {
+  --gradient-angle: 0deg;
+  border-image: conic-gradient(from var(--gradient-angle), #e84142, #B026FF, #00F0FF, #39FF14, #e84142) 1;
+  animation: rotate-gradient 4s linear infinite;
+}
+
+@keyframes rotate-gradient {
+  to { --gradient-angle: 360deg; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px var(--primary-glow), 0 0 15px var(--primary-glow); }
+  50% { box-shadow: 0 0 10px var(--primary), 0 0 30px var(--primary-glow), 0 0 60px rgba(0, 240, 255, 0.1); }
+}
+
+@keyframes border-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes scan-line {
+  0% { top: -5%; }
+  100% { top: 105%; }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.animate-border-flow {
+  background-size: 300% 300%;
+  animation: border-flow 4s ease infinite;
+}
+
+/* =========================================================================
+   Pattern Backgrounds
+   ========================================================================= */
+
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.bg-dot-pattern {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Scan line overlay for cyberpunk feel */
+.scan-lines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 240, 255, 0.01) 2px,
+    rgba(0, 240, 255, 0.01) 4px
+  );
+  pointer-events: none;
+}
+
+/* =========================================================================
+   Scrollbar
+   ========================================================================= */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-bright);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dim);
+}
+
+/* =========================================================================
+   Selection & Focus
+   ========================================================================= */
+
+::selection {
+  background: rgba(0, 240, 255, 0.3);
+  color: var(--text-primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
