@@ -1,3 +1,4 @@
+// Auto-generated from compiled artifact — do not edit
 export const LootVRFABI = [
   {
     "inputs": [
@@ -684,6 +685,19 @@ export const LootVRFABI = [
       }
     ],
     "name": "setRequestConfirmations",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_subscriptionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "setSubscriptionId",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
