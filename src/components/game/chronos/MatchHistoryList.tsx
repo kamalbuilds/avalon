@@ -37,11 +37,11 @@ function MatchEntry({ record, index }: { record: MatchRecord; index: number }) {
         <p className="text-xs font-bold text-text-primary truncate">
           vs {record.opponentName}
         </p>
-        <div className="flex items-center gap-2 text-[10px] font-mono text-text-muted">
+        <div className="flex items-center gap-2 text-[10px] font-mono text-text-secondary">
           <span>{record.totalBlocks} blocks</span>
-          <span>&middot;</span>
+          <span className="text-text-muted">&middot;</span>
           <span>{timeStr}</span>
-          <span>&middot;</span>
+          <span className="text-text-muted">&middot;</span>
           <span>HP: {record.playerHpRemaining} vs {record.aiHpRemaining}</span>
         </div>
       </div>
@@ -65,7 +65,7 @@ function MatchEntry({ record, index }: { record: MatchRecord; index: number }) {
       )}
 
       {/* Stats summary */}
-      <div className="shrink-0 text-[10px] font-mono text-text-muted text-right">
+      <div className="shrink-0 text-[10px] font-mono text-text-secondary text-right">
         <p>{record.playerStats.movesPlayed} moves</p>
         <p>{record.playerStats.damageDealt} dmg</p>
       </div>

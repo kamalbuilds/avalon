@@ -43,7 +43,7 @@ export function Leaderboard() {
               <p className="text-xs font-bold text-text-primary truncate">
                 {entry.playerName}
               </p>
-              <p className="text-[9px] font-mono text-text-muted truncate">
+              <p className="text-[9px] font-mono text-text-secondary truncate">
                 {entry.playerAddress}
               </p>
             </div>

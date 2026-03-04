@@ -391,8 +391,8 @@ function ChronosBattlePage() {
                     {/* NPC description & playstyle */}
                     {selectedNPC && (
                       <div className="mb-3 space-y-1.5">
-                        <p className="text-[10px] text-text-secondary leading-relaxed">{selectedNPC.description}</p>
-                        <p className="text-[9px] font-mono text-text-muted">
+                        <p className="text-[10px] text-text-secondary leading-relaxed line-clamp-3">{selectedNPC.description}</p>
+                        <p className="text-[9px] font-mono text-text-secondary">
                           <span className="text-neon-cyan">Playstyle:</span> {selectedNPC.playstyle}
                         </p>
                       </div>
