@@ -84,6 +84,7 @@ function ChronosBattlePage() {
   const sfx = useSoundEffects();
   const [showMatchResult, setShowMatchResult] = useState(false);
   const prevEventsLen = useRef(0);
+  const firedDialogues = useRef(new Set<string>());
 
   // Trigger dialogue + SFX on game events
   useEffect(() => {
@@ -118,13 +119,28 @@ function ChronosBattlePage() {
     if (game.player.hp > 0 && game.player.hp <= game.player.maxHp * 0.25) {
       dialogue.trigger('opponent_low_hp');
     }
+
+    // Once-per-match dialogue triggers
+    if (game.player.shieldActive && !firedDialogues.current.has('player_shielding')) {
+      firedDialogues.current.add('player_shielding');
+      dialogue.trigger('player_shielding');
+    }
+    if (game.ai.coins >= 15 && !firedDialogues.current.has('coin_rich')) {
+      firedDialogues.current.add('coin_rich');
+      dialogue.trigger('coin_rich');
+    }
+    if ((game.ai.hp - game.player.hp) >= 40 && !firedDialogues.current.has('dominating')) {
+      firedDialogues.current.add('dominating');
+      dialogue.trigger('dominating');
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game.events.length]);
 
-  // Trigger match_start dialogue
+  // Trigger match_start dialogue + reset fired set
   useEffect(() => {
-    if (screen === 'playing' && npcProfile && game.currentBlock <= 1) {
-      dialogue.trigger('match_start');
+    if (screen === 'playing' && game.currentBlock <= 1) {
+      firedDialogues.current.clear();
+      if (npcProfile) dialogue.trigger('match_start');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen]);
