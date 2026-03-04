@@ -223,8 +223,115 @@ const sdkTabs = [
   { id: "python", label: "Python", file: "quickstart.py" },
 ] as const;
 
+const l1DeployCode = `import { Avalon } from '@avalon/sdk';
+
+const avalon = new Avalon({
+  apiKey: process.env.AVALON_API_KEY!,
+  network: 'fuji', // or 'mainnet'
+});
+
+// Deploy your game on its own Avalanche L1
+const chain = await avalon.l1.deploy({
+  name: 'Dragon Quest Online',
+  blockTime: 2,           // 2-second block time
+  gasToken: 'DQO',        // your game's native token
+  validators: {
+    minStake: '2000',     // minimum stake in AVAX
+    maxValidators: 5,
+  },
+  nativeTokenSupply: '1_000_000',
+});
+
+console.log('Chain ID:', chain.chainId);    // e.g. 99999
+console.log('RPC URL:', chain.rpcUrl);      // https://rpc.dragon-quest.avax.gg
+console.log('Explorer:', chain.explorerUrl);
+
+// Fine-tune EVM settings for your players
+await avalon.l1.configure(chain.chainId, {
+  maxGasLimit: 8_000_000,
+  baseFeeEnabled: false,   // gasless for players
+  precompiles: ['warp', 'nativeMinter'],
+});
+
+console.log('L1 ready for players!');`;
+
+const agentCreateCode = `import { Avalon } from '@avalon/sdk';
+
+const avalon = new Avalon({
+  apiKey: process.env.AVALON_API_KEY!,
+  network: 'fuji',
+});
+
+// Create an autonomous AI NPC with ERC-8004 on-chain identity
+const guardian = await avalon.agents.create({
+  name: 'Iron Guardian',
+  archetype: 'warrior',
+  personality: {
+    aggression:   0.85,  // 0 = passive,     1 = relentless
+    caution:      0.40,  // 0 = reckless,    1 = defensive
+    adaptability: 0.70,  // 0 = predictable, 1 = unpredictable
+    loyalty:      0.60,  // 0 = selfish,     1 = team-focused
+  },
+  wallet: {
+    initialBalance: '10.00',  // USDT starting treasury
+    autoEarn: true,           // earns from wins and loot sales
+  },
+  behaviors: ['attack', 'defend', 'flee', 'taunt'],
+  model: 'chronos-v1',        // AI model powering decisions
+});
+
+console.log('Agent ID:',  guardian.agentId);
+// --> "0x2636...Fd7F:42"
+console.log('Wallet:',    guardian.walletAddress);
+// --> "0xAbCd...1234"
+
+// Agents have real on-chain wallets — they buy gear, pay entry fees, earn prizes
+const balance = await avalon.agents.getWallet(guardian.agentId);
+console.log('Treasury:', balance.usdt, 'USDT');`;
+
+const vrfLootCode = `import { Avalon } from '@avalon/sdk';
+
+const avalon = new Avalon({
+  apiKey: process.env.AVALON_API_KEY!,
+  network: 'fuji',
+});
+
+// Configure a loot table once during game setup
+await avalon.vrf.configureTable('post-battle-drops', {
+  drops: [
+    { item: 'Void Crystal',  rarity: 'legendary', weight: 1  },
+    { item: 'Frost Blade',   rarity: 'epic',       weight: 5  },
+    { item: 'Shadow Dagger', rarity: 'rare',       weight: 15 },
+    { item: 'Iron Sword',    rarity: 'common',     weight: 79 },
+  ],
+});
+
+// After a battle ends, roll for loot using Chainlink VRF v2.5
+const result = await avalon.vrf.rollLoot({
+  table:   'post-battle-drops',
+  player:  '0xPlayerAddress',
+  matchId: 'match-0042',   // for on-chain audit trail
+  count:   1,              // number of items to drop
+});
+
+// Every drop is provably fair — verifiable on-chain via Snowtrace
+console.log('Dropped:', result.drops[0].item);    // "Shadow Dagger"
+console.log('Rarity:',  result.drops[0].rarity);  // "rare"
+console.log('VRF ID:',  result.vrfRequestId);     // on-chain request hash
+
+// Verify any historical drop — players can audit their own luck
+const proof = await avalon.vrf.verify(result.vrfRequestId);
+console.log('Tamper-proof:', proof.isValid);       // true`;
+
+const exampleTabs = [
+  { id: "l1-deploy",  label: "L1 Deploy",  file: "l1-deploy.ts",  icon: "Layers",  code: l1DeployCode },
+  { id: "ai-agents",  label: "AI Agents",  file: "ai-agents.ts",  icon: "Bot",     code: agentCreateCode },
+  { id: "vrf-loot",   label: "VRF Loot",   file: "vrf-loot.ts",   icon: "Shield",  code: vrfLootCode },
+] as const;
+
 export default function SDKPage() {
   const [activeSDKTab, setActiveSDKTab] = useState<string>("typescript");
+  const [activeExampleTab, setActiveExampleTab] = useState<string>("l1-deploy");
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       {/* Header */}
@@ -297,6 +404,46 @@ export default function SDKPage() {
             );
           })}
         </div>
+      </motion.div>
+
+      {/* Code Examples */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="mb-16"
+      >
+        <h2 className="text-2xl font-bold mb-2">
+          <Terminal className="inline h-6 w-6 mr-2 text-neon-green" />
+          Code Examples
+        </h2>
+        <p className="text-muted mb-6">
+          Three focused recipes you can copy-paste into your game today.
+        </p>
+
+        {/* Example tabs */}
+        <div className="flex flex-wrap items-center gap-1 mb-4 p-1 rounded-lg bg-surface border border-border w-fit">
+          {exampleTabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveExampleTab(tab.id)}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all cursor-pointer ${
+                activeExampleTab === tab.id
+                  ? "bg-accent/15 text-accent border border-accent/30"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {exampleTabs.map((tab) =>
+          activeExampleTab === tab.id ? (
+            <CodeBlock key={tab.id} title={tab.file} code={tab.code} />
+          ) : null
+        )}
       </motion.div>
 
       {/* Quick Start Tab Switcher */}
