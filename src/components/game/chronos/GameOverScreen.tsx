@@ -1,7 +1,55 @@
 'use client';
 
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useChronosStore } from '@/stores/chronosStore';
+
+const CONFETTI_COLORS = ['#39FF14', '#00F0FF', '#FFE600', '#B026FF', '#FF00E5'];
+
+function VictoryConfetti({ count = 40 }: { count?: number }) {
+  const particles = useMemo(() =>
+    Array.from({ length: count }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      delay: Math.random() * 1.5,
+      duration: 2 + Math.random() * 1.5,
+      size: 3 + Math.random() * 5,
+      color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+      rotation: Math.random() * 360,
+      drift: (Math.random() - 0.5) * 60,
+    })), [count]);
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[60]">
+      {particles.map(p => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-sm"
+          style={{
+            left: `${p.x}%`,
+            top: -10,
+            width: p.size,
+            height: p.size * 1.5,
+            backgroundColor: p.color,
+            boxShadow: `0 0 ${p.size}px ${p.color}40`,
+          }}
+          initial={{ y: -20, x: 0, rotate: 0, opacity: 1 }}
+          animate={{
+            y: '110vh',
+            x: p.drift,
+            rotate: p.rotation + 720,
+            opacity: [1, 1, 0.8, 0],
+          }}
+          transition={{
+            duration: p.duration,
+            delay: p.delay,
+            ease: 'easeIn',
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 export function GameOverScreen() {
   const game = useChronosStore(s => s.game);
@@ -23,6 +71,9 @@ export function GameOverScreen() {
       animate={{ opacity: 1 }}
       className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
     >
+      {/* Victory confetti rain */}
+      {isVictory && <VictoryConfetti />}
+
       {/* Dramatic background pulse */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
