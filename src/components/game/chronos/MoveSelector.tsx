@@ -11,7 +11,7 @@ export function MoveSelector() {
   const isPlaying = game.phase === 'playing';
 
   return (
-    <div className="grid grid-cols-5 gap-2">
+    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
       {MOVE_LIST.map((moveType, index) => {
         const move = MOVES[moveType];
         const affordable = canAfford(moveType);
