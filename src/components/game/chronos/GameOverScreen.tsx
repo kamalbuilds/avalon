@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useChronosStore } from '@/stores/chronosStore';
 
 const CONFETTI_COLORS = ['#39FF14', '#00F0FF', '#FFE600', '#B026FF', '#FF00E5'];
+const DEFEAT_PARTICLE_COLORS = ['#FF1744', '#8B0000', '#4A0000', '#CC2200', '#FF4444'];
 
 function VictoryConfetti({ count = 40 }: { count?: number }) {
   const particles = useMemo(() =>
@@ -51,6 +52,54 @@ function VictoryConfetti({ count = 40 }: { count?: number }) {
   );
 }
 
+function DefeatParticles({ count = 35 }: { count?: number }) {
+  const particles = useMemo(() =>
+    Array.from({ length: count }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      delay: Math.random() * 2.5,
+      duration: 3 + Math.random() * 2,
+      size: 2 + Math.random() * 5,
+      color: DEFEAT_PARTICLE_COLORS[Math.floor(Math.random() * DEFEAT_PARTICLE_COLORS.length)],
+      rotation: Math.random() * 360,
+      drift: (Math.random() - 0.5) * 30,
+      repeatDelay: Math.random() * 2 + 0.5,
+    })), [count]);
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[60]">
+      {particles.map(p => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-[1px]"
+          style={{
+            left: `${p.x}%`,
+            top: -10,
+            width: p.size,
+            height: p.size * 2,
+            backgroundColor: p.color,
+            boxShadow: `0 0 ${p.size}px ${p.color}80`,
+          }}
+          initial={{ y: -20, x: 0, rotate: 0, opacity: 0.7 }}
+          animate={{
+            y: '110vh',
+            x: p.drift,
+            rotate: p.rotation + 540,
+            opacity: [0.7, 0.5, 0.3, 0],
+          }}
+          transition={{
+            duration: p.duration,
+            delay: p.delay,
+            ease: 'easeIn',
+            repeat: Infinity,
+            repeatDelay: p.repeatDelay,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export function GameOverScreen() {
   const game = useChronosStore(s => s.game);
   const screen = useChronosStore(s => s.screen);
@@ -74,6 +123,9 @@ export function GameOverScreen() {
       {/* Victory confetti rain */}
       {isVictory && <VictoryConfetti />}
 
+      {/* Defeat falling embers */}
+      {!isVictory && <DefeatParticles />}
+
       {/* Dramatic background pulse */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
@@ -88,11 +140,17 @@ export function GameOverScreen() {
         transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
       />
 
+      {/* Shake wrapper on defeat */}
+      <motion.div
+        animate={!isVictory ? { x: [0, -10, 10, -7, 7, -3, 3, 0] } : { x: 0 }}
+        transition={!isVictory ? { duration: 0.55, delay: 0.15 } : {}}
+        className="relative w-full max-w-md mx-4"
+      >
       <motion.div
         initial={{ scale: 0.8, y: 30 }}
         animate={{ scale: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-        className="relative w-full max-w-md mx-4 p-6 rounded-2xl border bg-surface overflow-hidden"
+        className="p-6 rounded-2xl border bg-surface overflow-hidden"
         style={{
           borderColor: isVictory ? '#39FF14' : '#FF1744',
         }}
@@ -252,6 +310,7 @@ export function GameOverScreen() {
             LOBBY
           </motion.button>
         </div>
+      </motion.div>
       </motion.div>
     </motion.div>
   );
