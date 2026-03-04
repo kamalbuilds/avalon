@@ -96,7 +96,7 @@ function ChronosBattlePage() {
     if (screen === 'playing') {
       if (lastEvt.type === 'move_landed' || lastEvt.type === 'counter_success') {
         sfx.play('hit');
-      } else if (lastEvt.type === 'shield_block') {
+      } else if (lastEvt.type === 'move_blocked') {
         sfx.play('block');
       }
     }
