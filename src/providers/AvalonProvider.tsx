@@ -9,6 +9,8 @@ import { createContext, useContext, useEffect, type ReactNode } from "react";
 import { useAccount, useBalance, useChainId } from "wagmi";
 import { useUserStore } from "@/stores/userStore";
 import { useGameStore } from "@/stores/gameStore";
+import { setContractAddresses } from "@/lib/contracts";
+import { CONTRACT_ADDRESSES } from "@/lib/contracts/addresses";
 import { MOCK_GAMES } from "@/lib/mockData";
 import type { Address } from "@/types";
 
@@ -39,6 +41,11 @@ export function AvalonProvider({ children }: { children: ReactNode }) {
 
   const userStore = useUserStore();
   const gameStore = useGameStore();
+
+  // Sync Fuji contract addresses into the viem contract layer
+  useEffect(() => {
+    setContractAddresses(CONTRACT_ADDRESSES);
+  }, []);
 
   // Sync wallet connection state → userStore
   useEffect(() => {

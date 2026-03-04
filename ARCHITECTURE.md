@@ -6,8 +6,8 @@ Avalon is a blockchain gaming SDK built as middleware between game engines (Unit
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    GAME ENGINE                           │
-│              (Unity / Unreal / React)                    │
+│                    GAME ENGINE                          │
+│              (Unity / Unreal / React)                   │
 └─────────────────────┬───────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────┐
