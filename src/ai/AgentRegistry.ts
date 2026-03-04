@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon AI — Agent Registry (ERC-8004 Interface)
+// Avalon AI Agent Registry (ERC-8004 Interface)
 // On-chain identity registration for AI NPCs
 // Each NPC is a tokenized agent with verifiable capabilities
 // ============================================================

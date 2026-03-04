@@ -1,5 +1,5 @@
 // ============================================================================
-// Chronos Battle — Named AI Opponents
+// Chronos Battle Named AI Opponents
 // Each opponent has personality, archetype, ERC-8004 identity, and stats
 // ============================================================================
 
@@ -51,7 +51,7 @@ export const CHRONOS_OPPONENTS: ChronosOpponent[] = [
     name: 'Aria',
     title: 'The Merchant',
     archetype: 'merchant',
-    description: 'A shrewd trader who fights like she invests — cautiously, with calculated risks. Hoards coins and strikes when the economy favors her.',
+    description: 'A shrewd trader who fights like she invests cautiously, with calculated risks. Hoards coins and strikes when the economy favors her.',
     avatar: '\uD83D\uDC69\u200D\uD83D\uDCBC',
     color: '#FFE600',
     glowColor: 'rgba(255, 230, 0, 0.3)',

@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon AI — Chronos Battle Named NPCs
+// Avalon AI Chronos Battle Named NPCs
 // 5 unique AI opponents with distinct personalities, wallets,
 // ERC-8004 identities, and combat styles
 // ============================================================
@@ -51,7 +51,7 @@ export const ARIA_THE_MERCHANT: ChronosNPCProfile = {
   walletAddress: '0x1111111111111111111111111111111111111111' as Address,
   reputation: 72,
   profileImage: '/npc/aria-merchant.png',
-  description: 'A shrewd trader who fights like she haggles — cautiously, always calculating the cost. Every move is an investment.',
+  description: 'A shrewd trader who fights like she haggles cautiously, always calculating the cost. Every move is an investment.',
   playstyle: 'Cautious and economical. Hoards coins, uses cheap moves, waits for the perfect expensive strike.',
   difficulty: 'medium',
   preferredMoves: ['quick_strike', 'shield', 'counter'],

@@ -36,7 +36,7 @@ export function Footer() {
             <p className="mt-4 max-w-sm text-sm text-muted">
               The blockchain gaming SDK for Avalanche. Deploy your game on its own L1
               with AI NPCs, provably fair loot, and stablecoin economies.
-              Build in Unity, Unreal, or React — we handle the chain.
+              Build in Unity, Unreal, or React we handle the chain.
             </p>
             <div className="mt-4 flex gap-3">
               <a href="#" className="rounded-lg border border-border p-2 text-muted transition-colors hover:border-accent/30 hover:text-accent">

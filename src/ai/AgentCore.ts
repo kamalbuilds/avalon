@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon AI — Agent Core
+// Avalon AI Agent Core
 // Base agent with perceive-think-act pipeline
 // Every NPC runs this loop: sense the world, decide, act
 // ============================================================
@@ -107,7 +107,7 @@ export class AgentCore {
   private running = false;
   private tickTimer: ReturnType<typeof setInterval> | null = null;
 
-  // Extension points — set by subsystems (PersonalitySystem, EconomicAgent, etc.)
+  // Extension points set by subsystems (PersonalitySystem, EconomicAgent, etc.)
   private thinkFn: ((perception: AgentPerception, memory: AgentMemory) => AgentDecision) | null = null;
   private actFn: ((decision: AgentDecision) => void) | null = null;
   private perceiveFn: ((selfEntity: { position: Vector2; health: number; maxHealth: number }, nearbyEntities: PerceivedEntity[], tick: number) => AgentPerception) | null = null;
@@ -201,7 +201,7 @@ export class AgentCore {
       return this.perceiveFn(selfData, nearbyEntities, currentTick);
     }
 
-    // Default perception — return what we know
+    // Default perception return what we know
     return {
       nearbyEntities,
       threats: nearbyEntities.filter(e => e.isThreat),
@@ -219,7 +219,7 @@ export class AgentCore {
       return this.thinkFn(perception, this.memory);
     }
 
-    // Default think — idle behavior
+    // Default think idle behavior
     const healthPercent = (perception.selfHealth / perception.selfMaxHealth) * 100;
 
     // Flee if low health
@@ -228,7 +228,7 @@ export class AgentCore {
         action: 'flee',
         priority: 10,
         confidence: 0.9,
-        reasoning: 'Low health, threats nearby — retreat',
+        reasoning: 'Low health, threats nearby retreat',
       };
     }
 

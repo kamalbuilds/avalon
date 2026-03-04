@@ -39,7 +39,7 @@ export default function GamesPage() {
   const chronosGame = {
     id: "chronos",
     name: "Chronos Battle",
-    description: "Turn-based strategic combat against ERC-8004 AI agents. Pick your moves wisely — each has cost, delay, and damage. Win USDT prizes.",
+    description: "Turn-based strategic combat against ERC-8004 AI agents. Pick your moves wisely each has cost, delay, and damage. Win USDT prizes.",
     status: "live" as GameStatus,
     playerCount: matchCountNum > 0 ? matchCountNum * 2 : 142,
     activeMatches: matchCountNum > 0 ? matchCountNum : 8,

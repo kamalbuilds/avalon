@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon SDK — Game Engine (SDK Entry Point)
+// Avalon SDK Game Engine (SDK Entry Point)
 // The core engine that developers use to power their games.
 // Exposes: initialize(), start(), stop(), getMatchManager(),
 // getEconomySystem(), state management, and event system.

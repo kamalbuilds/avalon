@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { Address, ChainId, TransactionStatus } from "@/types";
 
 // ---------------------------------------------------------------------------
-// User Store — wallet address, balance, chain, connected status, tx history
+// User Store wallet address, balance, chain, connected status, tx history
 // ---------------------------------------------------------------------------
 
 interface TransactionRecord {
@@ -29,22 +29,22 @@ interface UserStore {
   // Transaction history
   transactions: TransactionRecord[];
 
-  // Actions — Wallet
+  // Actions Wallet
   setAddress: (address: Address | null) => void;
   setDisplayName: (name: string) => void;
   setConnected: (connected: boolean) => void;
   setChainId: (chainId: ChainId | null) => void;
 
-  // Actions — Balances
+  // Actions Balances
   setBalance: (balance: string) => void;
   setUsdtBalance: (balance: string) => void;
   setTokenBalance: (token: string, balance: string) => void;
 
-  // Actions — Transactions
+  // Actions Transactions
   addTransaction: (tx: TransactionRecord) => void;
   updateTransactionStatus: (hash: string, status: TransactionStatus) => void;
 
-  // Actions — Session
+  // Actions Session
   disconnect: () => void;
 }
 

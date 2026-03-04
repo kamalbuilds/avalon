@@ -1,4 +1,4 @@
-// Auto-generated from compiled artifact — do not edit
+// Auto-generated from compiled artifact do not edit
 export const LootVRFABI = [
   {
     "inputs": [

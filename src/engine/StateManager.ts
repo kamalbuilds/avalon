@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon SDK — State Manager
+// Avalon SDK State Manager
 // On-chain state sync with local state. Immutable updates,
 // state diffing, subscriber system, chain synchronization.
 // ============================================================
@@ -55,12 +55,12 @@ export class StateManager {
 
   // --- Core API (matches SDK docs: avalon.state.*) ---
 
-  /** avalon.state.get() — Get current game state */
+  /** avalon.state.get() Get current game state */
   getState(): EngineState {
     return this.state;
   }
 
-  /** avalon.state.update(diff) — Apply a state update with diffing */
+  /** avalon.state.update(diff) Apply a state update with diffing */
   updateState(updater: (state: EngineState) => Partial<EngineState>): EngineState {
     const before = this.serialize();
     this.pushHistory();
@@ -80,12 +80,12 @@ export class StateManager {
     return this.state;
   }
 
-  /** avalon.state.history() — Get state history for replay */
+  /** avalon.state.history() Get state history for replay */
   getHistory(): EngineState[] {
     return [...this.history];
   }
 
-  /** Subscribe to state changes — callback fires with new state + diff */
+  /** Subscribe to state changes callback fires with new state + diff */
   subscribeToState(callback: StateSubscriber): () => void {
     this.subscribers.add(callback);
     return () => this.subscribers.delete(callback);

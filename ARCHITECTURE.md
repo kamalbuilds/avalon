@@ -54,7 +54,7 @@ Six Solidity contracts deployed on each game's Avalanche L1:
 - Chainlink VRF v2.5 consumer for provably fair randomness
 - Configurable loot tables per game
 - Rarity tiers: Common (50%), Uncommon (25%), Rare (15%), Epic (7.5%), Legendary (2.5%)
-- On-chain proof of every drop — players can verify
+- On-chain proof of every drop players can verify
 
 ### StablecoinEconomy.sol (Tether WDK)
 - USDT entry fees, prize pools, platform fees
@@ -79,10 +79,10 @@ Six Solidity contracts deployed on each game's Avalanche L1:
 
 ### BehaviorTree.ts
 Production-grade decision tree framework:
-- **Selector** — tries children until one succeeds (OR logic)
-- **Sequence** — runs children until one fails (AND logic)
-- **Decorators** — Inverter, Repeat, AlwaysSucceed
-- **DecisionNode** — produces typed AgentDecision objects
+- **Selector** tries children until one succeeds (OR logic)
+- **Sequence** runs children until one fails (AND logic)
+- **Decorators** Inverter, Repeat, AlwaysSucceed
+- **DecisionNode** produces typed AgentDecision objects
 
 ### PersonalitySystem.ts
 Trait-driven NPC behavior:
@@ -129,17 +129,17 @@ avalon.matches.create(cfg);    // Create match
 ```
 
 ### Chronos Battle Engine (`chronos/`)
-- **ChronosEngine.ts** — State machine: move launch → in-flight → damage resolution → game over
-- **ChronosAI.ts** — Three difficulty tiers with personality-driven decision trees
-- **moves.ts** — 5 move types with energy costs, block delays, damage values
-- **opponents.ts** — Named opponent roster with stat cards
+- **ChronosEngine.ts** State machine: move launch → in-flight → damage resolution → game over
+- **ChronosAI.ts** Three difficulty tiers with personality-driven decision trees
+- **moves.ts** 5 move types with energy costs, block delays, damage values
+- **opponents.ts** Named opponent roster with stat cards
 
 ### Core Systems
-- **GameEngine.ts** — Initialize, start, stop lifecycle
-- **StateManager.ts** — On-chain ↔ local state sync with diffing
-- **EconomySystem.ts** — Balance tracking, entry fees, prize pools
-- **MatchManager.ts** — Match lifecycle state machine (lobby → active → completed → settled)
-- **EventEmitter.ts** — Typed events for UI and on-chain logging
+- **GameEngine.ts** Initialize, start, stop lifecycle
+- **StateManager.ts** On-chain ↔ local state sync with diffing
+- **EconomySystem.ts** Balance tracking, entry fees, prize pools
+- **MatchManager.ts** Match lifecycle state machine (lobby → active → completed → settled)
+- **EventEmitter.ts** Typed events for UI and on-chain logging
 
 ---
 
@@ -148,25 +148,25 @@ avalon.matches.create(cfg);    // Create match
 ### Routes
 | Route | Purpose |
 |-------|---------|
-| `/` | Landing page — SDK pitch, features, code examples |
+| `/` | Landing page SDK pitch, features, code examples |
 | `/sdk` | SDK documentation with TypeScript + Unity examples |
-| `/dashboard` | Developer dashboard — L1 chains, AI agents, economies |
+| `/dashboard` | Developer dashboard L1 chains, AI agents, economies |
 | `/games` | Game browser |
 | `/games/[gameId]` | Game detail page |
-| `/play/chronos` | Chronos Battle — playable demo |
+| `/play/chronos` | Chronos Battle playable demo |
 | `/play/chronos/history` | Match history and replays |
 | `/play/[gameId]` | Generic game player |
 
 ### State Management (Zustand)
-- **chronosStore** — Full Chronos Battle state: HP, moves, blocks, AI, effects
-- **gameStore** — Active matches, player stats, pending transactions
-- **userStore** — Wallet, balance, chain, connection status
+- **chronosStore** Full Chronos Battle state: HP, moves, blocks, AI, effects
+- **gameStore** Active matches, player stats, pending transactions
+- **userStore** Wallet, balance, chain, connection status
 
 ### Web3 Integration
-- **AvalonProvider** — Wraps wagmi + RainbowKit + Avalon SDK context
-- **useAvalon()** — Master hook: `{ l1, agents, vrf, economy, wallet }`
-- **useContracts()** — Typed contract read/write hooks
-- **useWallet()** — Wallet state, balance, chain detection, network switching
+- **AvalonProvider** Wraps wagmi + RainbowKit + Avalon SDK context
+- **useAvalon()** Master hook: `{ l1, agents, vrf, economy, wallet }`
+- **useContracts()** Typed contract read/write hooks
+- **useWallet()** Wallet state, balance, chain detection, network switching
 
 ### Component Architecture
 ```
@@ -227,19 +227,19 @@ Developer installs @avalon/sdk
 
 ## Key Design Decisions
 
-1. **SDK not Engine** — Game devs already love Unity/Unreal. We don't compete with graphics engines. We handle the blockchain layer only.
+1. **SDK not Engine** Game devs already love Unity/Unreal. We don't compete with graphics engines. We handle the blockchain layer only.
 
-2. **Per-game L1** — Each game gets its own Avalanche L1 chain. No shared chain congestion, custom block time, custom gas token.
+2. **Per-game L1** Each game gets its own Avalanche L1 chain. No shared chain congestion, custom block time, custom gas token.
 
-3. **ERC-8004 for NPCs** — Using Avalanche's Trustless Agents standard gives NPCs real on-chain identity. They own wallets, build reputation, persist across sessions.
+3. **ERC-8004 for NPCs** Using Avalanche's Trustless Agents standard gives NPCs real on-chain identity. They own wallets, build reputation, persist across sessions.
 
-4. **VRF for Fairness** — Every loot drop is provably random via Chainlink VRF v2.5. Players can verify on-chain. No "rigged" drop tables.
+4. **VRF for Fairness** Every loot drop is provably random via Chainlink VRF v2.5. Players can verify on-chain. No "rigged" drop tables.
 
-5. **USDT not Custom Token** — Real stablecoins (Tether WDK) for real economies. No worthless game tokens. Players earn and spend actual USDT.
+5. **USDT not Custom Token** Real stablecoins (Tether WDK) for real economies. No worthless game tokens. Players earn and spend actual USDT.
 
-6. **Personality-Driven AI** — NPCs aren't random. Each has an archetype, 8 personality traits, mood system, and behavior tree. Their economic and combat decisions reflect who they are.
+6. **Personality-Driven AI** NPCs aren't random. Each has an archetype, 8 personality traits, mood system, and behavior tree. Their economic and combat decisions reflect who they are.
 
-7. **Chronos Battle as Proof** — Instead of a generic demo, we built a game where blockchain mechanics ARE the game design. Latency isn't a bug — it's the core mechanic.
+7. **Chronos Battle as Proof** Instead of a generic demo, we built a game where blockchain mechanics ARE the game design. Latency isn't a bug it's the core mechanic.
 
 ---
 
@@ -255,7 +255,7 @@ Developer installs @avalon/sdk
 
 ---
 
-## Deployed Contracts — Avalanche Fuji Testnet
+## Deployed Contracts Avalanche Fuji Testnet
 
 All contracts deployed and verified on [Snowtrace](https://testnet.snowtrace.io).
 

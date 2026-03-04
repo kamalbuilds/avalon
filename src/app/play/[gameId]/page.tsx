@@ -166,8 +166,8 @@ export default function PlayPage({
                     move.type === "fast"
                       ? "bg-danger shadow-[0_0_15px_rgba(255,23,68,0.5)]"
                       : move.type === "medium"
-                      ? "bg-warning shadow-[0_0_15px_rgba(255,230,0,0.5)]"
-                      : "bg-success shadow-[0_0_15px_rgba(57,255,20,0.5)]"
+                        ? "bg-warning shadow-[0_0_15px_rgba(255,230,0,0.5)]"
+                        : "bg-success shadow-[0_0_15px_rgba(57,255,20,0.5)]"
                   )}
                 />
               ))}
@@ -175,12 +175,12 @@ export default function PlayPage({
 
             <div className="text-center">
               <Swords className="mx-auto h-16 w-16 text-muted/20 mb-4" />
-              <p className="text-muted/60 text-sm">Game Arena — {game.name}</p>
+              <p className="text-muted/60 text-sm">Game Arena {game.name}</p>
             </div>
           </div>
         </div>
 
-        {/* Right Panel — Opponent */}
+        {/* Right Panel Opponent */}
         <div className="flex w-64 flex-col border-l border-border bg-surface">
           <div className="border-b border-border p-4">
             <h3 className="text-sm font-semibold flex items-center gap-2">
@@ -235,7 +235,7 @@ export default function PlayPage({
         </div>
       </div>
 
-      {/* Bottom — Move Controls */}
+      {/* Bottom Move Controls */}
       <div className="border-t border-border bg-surface px-6 py-4">
         <div className="mx-auto flex max-w-lg items-center justify-center gap-4">
           {moveButtons.map((move) => {

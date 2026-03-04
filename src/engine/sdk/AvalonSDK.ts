@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon SDK — Main Entry Point
+// Avalon SDK Main Entry Point
 // This is THE class that developers import:
 //   import { Avalon } from '@avalon/sdk';
 //   const avalon = new Avalon({ apiKey, network });
@@ -377,7 +377,7 @@ class OnboardModule {
 }
 
 // ============================================================
-// Avalon — Main SDK Class
+// Avalon Main SDK Class
 // ============================================================
 
 export class Avalon {

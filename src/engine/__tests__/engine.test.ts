@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon SDK — Smoke Test
+// Avalon SDK Smoke Test
 // Verifies: engine init, match creation, player join, moves,
 // combat, economy, serialization, SDK class
 // ============================================================

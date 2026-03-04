@@ -62,7 +62,7 @@ const modules = [
   {
     icon: Layers,
     title: "L1 Deployment",
-    description: "Deploy your game on its own Avalanche L1 with custom parameters — block time, gas token, validator set.",
+    description: "Deploy your game on its own Avalanche L1 with custom parameters block time, gas token, validator set.",
     color: "text-avalanche",
     bgColor: "bg-avalanche/10",
     methods: ["avalon.l1.deploy()", "avalon.l1.configure()", "avalon.l1.status()"],
@@ -165,7 +165,7 @@ console.log('Game deployed on L1:', chain.chainId);
 console.log('NPC registered:', npc.agentId);
 console.log('Ready for players!');`;
 
-const unityCode = `// Unity C# — Avalon Plugin
+const unityCode = `// Unity C# Avalon Plugin
 using Avalon.SDK;
 
 public class GameManager : MonoBehaviour
@@ -190,7 +190,7 @@ public class GameManager : MonoBehaviour
     }
 }`;
 
-const pythonCode = `# Python — Avalon SDK
+const pythonCode = `# Python Avalon SDK
 from avalon_sdk import Avalon
 
 # 1. Initialize
@@ -244,7 +244,7 @@ export default function SDKPage() {
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
           Keep building in Unity, Unreal, or React. Avalon gives your game its own
-          Avalanche L1 with AI agents, fair loot, and real economies — through a simple SDK.
+          Avalanche L1 with AI agents, fair loot, and real economies through a simple SDK.
         </p>
       </motion.div>
 
@@ -299,7 +299,7 @@ export default function SDKPage() {
         </div>
       </motion.div>
 
-      {/* Quick Start — Tab Switcher */}
+      {/* Quick Start Tab Switcher */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -319,11 +319,10 @@ export default function SDKPage() {
             <button
               key={tab.id}
               onClick={() => setActiveSDKTab(tab.id)}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all cursor-pointer ${
-                activeSDKTab === tab.id
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all cursor-pointer ${activeSDKTab === tab.id
                   ? "bg-accent/15 text-accent border border-accent/30"
                   : "text-muted hover:text-foreground"
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -353,7 +352,7 @@ export default function SDKPage() {
           Ready to Ship?
         </h2>
         <p className="mt-4 text-muted">
-          See Avalon in action — play Chronos Battle, built entirely on the SDK.
+          See Avalon in action play Chronos Battle, built entirely on the SDK.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <Link href="/play/chronos">

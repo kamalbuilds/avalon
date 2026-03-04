@@ -46,7 +46,7 @@ const presetConfig: Record<EmptyPreset, { icon: LucideIcon; title: string; descr
   "no-games": {
     icon: Gamepad2,
     title: "No Games Found",
-    description: "There are no games here yet. Be the first to create one — every game gets its own Avalanche L1 blockchain.",
+    description: "There are no games here yet. Be the first to create one every game gets its own Avalanche L1 blockchain.",
     actionLabel: "Create a Game",
   },
 };

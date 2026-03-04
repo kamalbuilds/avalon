@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon SDK — Event Emitter
+// Avalon SDK Event Emitter
 // Typed event system for UI subscribers + on-chain logging.
 // Every game action flows through here.
 // ============================================================
@@ -57,7 +57,7 @@ export class EventEmitter {
     return this.on(event, wrapper);
   }
 
-  /** Subscribe to ALL events — useful for logging, analytics, replays */
+  /** Subscribe to ALL events useful for logging, analytics, replays */
   onAny(handler: AvalonEventHandler): () => void {
     this.wildcardListeners.add(handler);
     return () => this.wildcardListeners.delete(handler);

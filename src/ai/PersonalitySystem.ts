@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon AI — Personality System
+// Avalon AI Personality System
 // Traits, moods, and archetypes that shape NPC behavior
 // Personality influences decisions, dialogue, and economics
 // ============================================================

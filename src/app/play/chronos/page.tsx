@@ -92,7 +92,7 @@ export default function ChronosBattlePage() {
     if (game.player.hp > 0 && game.player.hp <= game.player.maxHp * 0.25) {
       dialogue.trigger('opponent_low_hp');
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game.events.length]);
 
   // Trigger match_start dialogue
@@ -100,7 +100,7 @@ export default function ChronosBattlePage() {
     if (screen === 'playing' && npcProfile && game.currentBlock <= 1) {
       dialogue.trigger('match_start');
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen]);
 
   // Trigger win/lose dialogue on game over
@@ -109,7 +109,7 @@ export default function ChronosBattlePage() {
       const isWin = game.winner === 'player';
       dialogue.trigger(isWin ? 'lose' : 'win');
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen]);
 
   // Keyboard shortcuts: 1-5 for moves
@@ -189,448 +189,445 @@ export default function ChronosBattlePage() {
 
   return (
     <WalletGate>
-    <div className="min-h-screen bg-background flex flex-col relative">
-      {/* Transaction Pending Overlay */}
-      <TransactionPending
-        isOpen={txStatus !== null}
-        status={txStatus ?? 'pending'}
-        txHash={txHash}
-        message={txStatus === 'pending' ? 'Approving USDT entry fee...' : txStatus === 'confirming' ? 'Creating match on-chain...' : undefined}
-        onClose={() => setTxStatus(null)}
-      />
+      <div className="min-h-screen bg-background flex flex-col relative">
+        {/* Transaction Pending Overlay */}
+        <TransactionPending
+          isOpen={txStatus !== null}
+          status={txStatus ?? 'pending'}
+          txHash={txHash}
+          message={txStatus === 'pending' ? 'Approving USDT entry fee...' : txStatus === 'confirming' ? 'Creating match on-chain...' : undefined}
+          onClose={() => setTxStatus(null)}
+        />
 
-      {/* Header */}
-      <header className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-border shrink-0">
-        <div className="flex items-center gap-3">
-          <motion.h1
-            className="text-xl font-bold tracking-tight"
-            style={{
-              background: 'linear-gradient(135deg, #00F0FF, #FF00E5)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            CHRONOS BATTLE
-          </motion.h1>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-surface-2 border border-border text-text-muted">
-            Avalon
-          </span>
-        </div>
-
-        {screen === 'playing' && <MatchTimer />}
-
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-2 border border-border">
-            <span className="text-[10px] font-mono text-text-muted">USDT</span>
-            <span className="text-sm font-mono font-bold text-neon-yellow">${playerBalance}</span>
+        {/* Header */}
+        <header className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-border shrink-0">
+          <div className="flex items-center gap-3">
+            <motion.h1
+              className="text-xl font-bold tracking-tight"
+              style={{
+                background: 'linear-gradient(135deg, #00F0FF, #FF00E5)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              CHRONOS BATTLE
+            </motion.h1>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-surface-2 border border-border text-text-muted">
+              Avalon
+            </span>
           </div>
 
-          {screen !== 'playing' && (
-            <div className="flex gap-1">
-              <TabButton active={screen === 'lobby'} onClick={() => setScreen('lobby')} label="FIGHT" />
-              <TabButton active={screen === 'history'} onClick={() => setScreen('history')} label="HISTORY" />
-              <TabButton active={screen === 'leaderboard'} onClick={() => setScreen('leaderboard')} label="RANKS" />
-            </div>
-          )}
+          {screen === 'playing' && <MatchTimer />}
 
-          {screen === 'playing' && (
-            <span className="text-[10px] font-mono px-2 py-1 rounded bg-neon-green/10 text-neon-green border border-neon-green/20">
-              LIVE
-            </span>
-          )}
-        </div>
-      </header>
-
-      {/* === LOBBY SCREEN === */}
-      {screen === 'lobby' && (
-        <div className="flex-1 flex flex-col md:flex-row gap-4 p-4 min-h-0 overflow-hidden">
-          {/* Opponent selection grid — NPCCard from designer agent */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="mb-4">
-              <h2 className="text-lg font-bold text-text-primary mb-1">Choose Your Opponent</h2>
-              <p className="text-sm text-text-secondary">
-                Each AI has a unique ERC-8004 on-chain identity and fighting style. Higher difficulty = bigger stakes.
-              </p>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-2 border border-border">
+              <span className="text-[10px] font-mono text-text-muted">USDT</span>
+              <span className="text-sm font-mono font-bold text-neon-yellow">${playerBalance}</span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {opponents.map(opp => {
-                const npc = getNPCForOpponent(opp);
-                if (!npc) {
-                  // Fallback to OpponentCard if no NPC profile
-                  return (
-                    <div
-                      key={opp.id}
-                      onClick={() => selectOpponent(opp)}
-                      className={`cursor-pointer rounded-xl border-2 p-4 transition-all ${
-                        selectedOpponent?.id === opp.id
-                          ? 'border-neon-cyan bg-neon-cyan/5'
-                          : 'border-border bg-surface hover:border-border-bright'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{opp.avatar}</span>
-                        <div>
-                          <h3 className="font-bold text-text-primary">{opp.name}</h3>
-                          <p className="text-xs text-text-muted">{opp.title}</p>
+            {screen !== 'playing' && (
+              <div className="flex gap-1">
+                <TabButton active={screen === 'lobby'} onClick={() => setScreen('lobby')} label="FIGHT" />
+                <TabButton active={screen === 'history'} onClick={() => setScreen('history')} label="HISTORY" />
+                <TabButton active={screen === 'leaderboard'} onClick={() => setScreen('leaderboard')} label="RANKS" />
+              </div>
+            )}
+
+            {screen === 'playing' && (
+              <span className="text-[10px] font-mono px-2 py-1 rounded bg-neon-green/10 text-neon-green border border-neon-green/20">
+                LIVE
+              </span>
+            )}
+          </div>
+        </header>
+
+        {/* === LOBBY SCREEN === */}
+        {screen === 'lobby' && (
+          <div className="flex-1 flex flex-col md:flex-row gap-4 p-4 min-h-0 overflow-hidden">
+            {/* Opponent selection grid NPCCard from designer agent */}
+            <div className="flex-1 overflow-y-auto">
+              <div className="mb-4">
+                <h2 className="text-lg font-bold text-text-primary mb-1">Choose Your Opponent</h2>
+                <p className="text-sm text-text-secondary">
+                  Each AI has a unique ERC-8004 on-chain identity and fighting style. Higher difficulty = bigger stakes.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {opponents.map(opp => {
+                  const npc = getNPCForOpponent(opp);
+                  if (!npc) {
+                    // Fallback to OpponentCard if no NPC profile
+                    return (
+                      <div
+                        key={opp.id}
+                        onClick={() => selectOpponent(opp)}
+                        className={`cursor-pointer rounded-xl border-2 p-4 transition-all ${selectedOpponent?.id === opp.id
+                            ? 'border-neon-cyan bg-neon-cyan/5'
+                            : 'border-border bg-surface hover:border-border-bright'
+                          }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">{opp.avatar}</span>
+                          <div>
+                            <h3 className="font-bold text-text-primary">{opp.name}</h3>
+                            <p className="text-xs text-text-muted">{opp.title}</p>
+                          </div>
                         </div>
                       </div>
+                    );
+                  }
+                  return (
+                    <div key={opp.id} onClick={() => selectOpponent(opp)} className="cursor-pointer">
+                      <NPCCard
+                        name={npc.name}
+                        archetype={mapArchetype(npc.archetype)}
+                        personality={npcToCardPersonality(npc)}
+                        reputation={npc.reputation}
+                        walletBalance={`$${opp.entryFee} USDT`}
+                        level={npc.difficulty === 'easy' ? 1 : npc.difficulty === 'medium' ? 5 : npc.difficulty === 'hard' ? 10 : 15}
+                        isActive={selectedOpponent?.id === opp.id}
+                        className={selectedOpponent?.id === opp.id ? 'ring-2 ring-neon-cyan' : ''}
+                      />
                     </div>
                   );
-                }
-                return (
-                  <div key={opp.id} onClick={() => selectOpponent(opp)} className="cursor-pointer">
-                    <NPCCard
-                      name={npc.name}
-                      archetype={mapArchetype(npc.archetype)}
-                      personality={npcToCardPersonality(npc)}
-                      reputation={npc.reputation}
-                      walletBalance={`$${opp.entryFee} USDT`}
-                      level={npc.difficulty === 'easy' ? 1 : npc.difficulty === 'medium' ? 5 : npc.difficulty === 'hard' ? 10 : 15}
-                      isActive={selectedOpponent?.id === opp.id}
-                      className={selectedOpponent?.id === opp.id ? 'ring-2 ring-neon-cyan' : ''}
-                    />
-                  </div>
-                );
-              })}
-            </div>
+                })}
+              </div>
 
-            {/* How to play */}
-            <div className="mt-6 p-4 rounded-xl bg-surface-2 border border-border">
-              <h3 className="text-xs font-mono text-text-secondary uppercase tracking-wider mb-2">How To Play</h3>
-              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 text-center">
-                <MoveHint icon={'\u26A1'} name="Quick Strike" cost="1" delay="instant" dmg="10" color="#00F0FF" />
-                <MoveHint icon={'\uD83D\uDCA5'} name="Power Blow" cost="2" delay="3 blocks" dmg="25" color="#FF6B00" />
-                <MoveHint icon={'\uD83D\uDD25'} name="Devastating" cost="3" delay="6 blocks" dmg="50" color="#FF1744" />
-                <MoveHint icon={'\uD83D\uDEE1\uFE0F'} name="Shield" cost="1" delay="2 blocks" dmg="Block" color="#39FF14" />
-                <MoveHint icon={'\uD83D\uDD04'} name="Counter" cost="2" delay="instant" dmg="2x" color="#B026FF" />
+              {/* How to play */}
+              <div className="mt-6 p-4 rounded-xl bg-surface-2 border border-border">
+                <h3 className="text-xs font-mono text-text-secondary uppercase tracking-wider mb-2">How To Play</h3>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 text-center">
+                  <MoveHint icon={'\u26A1'} name="Quick Strike" cost="1" delay="instant" dmg="10" color="#00F0FF" />
+                  <MoveHint icon={'\uD83D\uDCA5'} name="Power Blow" cost="2" delay="3 blocks" dmg="25" color="#FF6B00" />
+                  <MoveHint icon={'\uD83D\uDD25'} name="Devastating" cost="3" delay="6 blocks" dmg="50" color="#FF1744" />
+                  <MoveHint icon={'\uD83D\uDEE1\uFE0F'} name="Shield" cost="1" delay="2 blocks" dmg="Block" color="#39FF14" />
+                  <MoveHint icon={'\uD83D\uDD04'} name="Counter" cost="2" delay="instant" dmg="2x" color="#B026FF" />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Right panel: selected opponent details + start */}
-          <div className="w-full md:w-72 shrink-0 flex flex-col gap-3">
-            {selectedOpponent ? (
-              <>
-                <div
-                  className="p-4 rounded-xl border-2 bg-surface"
-                  style={{
-                    borderColor: selectedOpponent.color,
-                    boxShadow: `0 0 30px ${selectedOpponent.glowColor}`,
-                  }}
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div
-                      className="w-14 h-14 rounded-full flex items-center justify-center border-2 text-2xl"
-                      style={{ borderColor: selectedOpponent.color }}
-                    >
-                      {selectedOpponent.avatar}
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-text-primary">{selectedOpponent.name}</h3>
-                      <p className="text-xs font-mono" style={{ color: selectedOpponent.color }}>
-                        {selectedOpponent.title}
-                      </p>
-                      {selectedNPC && (
-                        <p className="text-[9px] font-mono text-text-muted mt-0.5 italic">
-                          &ldquo;{selectedNPC.catchphrase}&rdquo;
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* NPC description & playstyle */}
-                  {selectedNPC && (
-                    <div className="mb-3 space-y-1.5">
-                      <p className="text-[10px] text-text-secondary leading-relaxed">{selectedNPC.description}</p>
-                      <p className="text-[9px] font-mono text-text-muted">
-                        <span className="text-neon-cyan">Playstyle:</span> {selectedNPC.playstyle}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* ERC-8004 Identity block */}
-                  <div className="p-2.5 rounded-lg bg-surface-2 border border-border mb-3 space-y-1">
-                    <div className="flex justify-between text-[9px] font-mono">
-                      <span className="text-text-muted">Agent ID</span>
-                      <span className="text-neon-cyan">
-                        {selectedNPC ? `ERC-8004 ${selectedNPC.agentId}` : `ERC-8004 #${selectedOpponent.identity.tokenId}`}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-[9px] font-mono">
-                      <span className="text-text-muted">Contract</span>
-                      <span className="text-text-secondary">{selectedOpponent.identity.contractAddress.slice(0, 8)}...{selectedOpponent.identity.contractAddress.slice(-4)}</span>
-                    </div>
-                    <div className="flex justify-between text-[9px] font-mono">
-                      <span className="text-text-muted">Reputation</span>
-                      <span className="text-neon-green">{selectedNPC ? selectedNPC.reputation : selectedOpponent.identity.reputationScore}/100</span>
-                    </div>
-                    <div className="flex justify-between text-[9px] font-mono">
-                      <span className="text-text-muted">Record</span>
-                      <span>
-                        <span className="text-neon-green">{selectedOpponent.identity.totalWins}W</span>
-                        {' / '}
-                        <span className="text-neon-red">{selectedOpponent.identity.totalLosses}L</span>
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-[9px] font-mono">
-                      <span className="text-text-muted">Win Rate</span>
-                      <span className="text-neon-yellow">
-                        {selectedNPC ? `${Math.round(selectedNPC.winRate * 100)}%` : `${selectedOpponent.identity.walletBalance}`}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-[9px] font-mono">
-                      <span className="text-text-muted">Difficulty</span>
-                      <span className={`font-bold ${
-                        selectedOpponent.difficulty === 'easy' ? 'text-neon-green' :
-                        selectedOpponent.difficulty === 'medium' ? 'text-neon-yellow' :
-                        selectedOpponent.difficulty === 'hard' ? 'text-neon-orange' :
-                        selectedOpponent.difficulty === 'expert' ? 'text-neon-red' :
-                        'text-neon-magenta'
-                      }`}>
-                        {selectedOpponent.difficulty.toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Entry fee / Prize */}
-                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-surface-2 border border-border mb-3">
-                    <div className="text-center">
-                      <p className="text-[9px] font-mono text-text-muted">ENTRY FEE</p>
-                      <p className="text-sm font-mono font-bold text-neon-yellow">${selectedOpponent.entryFee}</p>
-                    </div>
-                    <span className="text-text-muted">{'\u2192'}</span>
-                    <div className="text-center">
-                      <p className="text-[9px] font-mono text-text-muted">PRIZE</p>
-                      <p className="text-sm font-mono font-bold text-neon-green">${selectedOpponent.prizePool}</p>
-                    </div>
-                  </div>
-
-                  <motion.button
-                    whileHover={canAffordEntry ? { scale: 1.02 } : {}}
-                    whileTap={canAffordEntry ? { scale: 0.98 } : {}}
-                    onClick={handleStartMatch}
-                    disabled={!canAffordEntry || isWritePending}
-                    className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${
-                      canAffordEntry
-                        ? 'bg-neon-cyan text-black shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)]'
-                        : 'bg-surface-3 text-text-muted cursor-not-allowed'
-                    }`}
+            {/* Right panel: selected opponent details + start */}
+            <div className="w-full md:w-72 shrink-0 flex flex-col gap-3">
+              {selectedOpponent ? (
+                <>
+                  <div
+                    className="p-4 rounded-xl border-2 bg-surface"
+                    style={{
+                      borderColor: selectedOpponent.color,
+                      boxShadow: `0 0 30px ${selectedOpponent.glowColor}`,
+                    }}
                   >
-                    {canAffordEntry ? 'START MATCH' : 'INSUFFICIENT FUNDS'}
-                  </motion.button>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div
+                        className="w-14 h-14 rounded-full flex items-center justify-center border-2 text-2xl"
+                        style={{ borderColor: selectedOpponent.color }}
+                      >
+                        {selectedOpponent.avatar}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-text-primary">{selectedOpponent.name}</h3>
+                        <p className="text-xs font-mono" style={{ color: selectedOpponent.color }}>
+                          {selectedOpponent.title}
+                        </p>
+                        {selectedNPC && (
+                          <p className="text-[9px] font-mono text-text-muted mt-0.5 italic">
+                            &ldquo;{selectedNPC.catchphrase}&rdquo;
+                          </p>
+                        )}
+                      </div>
+                    </div>
 
-                  {!canAffordEntry && (
-                    <p className="text-[9px] text-neon-red font-mono text-center mt-1">
-                      Need ${selectedOpponent.entryFee} USDT (Balance: ${playerBalance})
-                    </p>
-                  )}
-                </div>
+                    {/* NPC description & playstyle */}
+                    {selectedNPC && (
+                      <div className="mb-3 space-y-1.5">
+                        <p className="text-[10px] text-text-secondary leading-relaxed">{selectedNPC.description}</p>
+                        <p className="text-[9px] font-mono text-text-muted">
+                          <span className="text-neon-cyan">Playstyle:</span> {selectedNPC.playstyle}
+                        </p>
+                      </div>
+                    )}
 
-                {/* Leaderboard preview */}
-                <div className="bg-surface rounded-xl border border-border p-3 flex-1 overflow-y-auto">
-                  <Leaderboard />
-                </div>
-              </>
-            ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <div className="text-center">
-                  <span className="text-4xl block mb-3">{'\u2694\uFE0F'}</span>
-                  <p className="text-sm text-text-muted">Select an opponent to begin</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+                    {/* ERC-8004 Identity block */}
+                    <div className="p-2.5 rounded-lg bg-surface-2 border border-border mb-3 space-y-1">
+                      <div className="flex justify-between text-[9px] font-mono">
+                        <span className="text-text-muted">Agent ID</span>
+                        <span className="text-neon-cyan">
+                          {selectedNPC ? `ERC-8004 ${selectedNPC.agentId}` : `ERC-8004 #${selectedOpponent.identity.tokenId}`}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-[9px] font-mono">
+                        <span className="text-text-muted">Contract</span>
+                        <span className="text-text-secondary">{selectedOpponent.identity.contractAddress.slice(0, 8)}...{selectedOpponent.identity.contractAddress.slice(-4)}</span>
+                      </div>
+                      <div className="flex justify-between text-[9px] font-mono">
+                        <span className="text-text-muted">Reputation</span>
+                        <span className="text-neon-green">{selectedNPC ? selectedNPC.reputation : selectedOpponent.identity.reputationScore}/100</span>
+                      </div>
+                      <div className="flex justify-between text-[9px] font-mono">
+                        <span className="text-text-muted">Record</span>
+                        <span>
+                          <span className="text-neon-green">{selectedOpponent.identity.totalWins}W</span>
+                          {' / '}
+                          <span className="text-neon-red">{selectedOpponent.identity.totalLosses}L</span>
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-[9px] font-mono">
+                        <span className="text-text-muted">Win Rate</span>
+                        <span className="text-neon-yellow">
+                          {selectedNPC ? `${Math.round(selectedNPC.winRate * 100)}%` : `${selectedOpponent.identity.walletBalance}`}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-[9px] font-mono">
+                        <span className="text-text-muted">Difficulty</span>
+                        <span className={`font-bold ${selectedOpponent.difficulty === 'easy' ? 'text-neon-green' :
+                            selectedOpponent.difficulty === 'medium' ? 'text-neon-yellow' :
+                              selectedOpponent.difficulty === 'hard' ? 'text-neon-orange' :
+                                selectedOpponent.difficulty === 'expert' ? 'text-neon-red' :
+                                  'text-neon-magenta'
+                          }`}>
+                          {selectedOpponent.difficulty.toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
 
-      {/* === PLAYING SCREEN === */}
-      {screen === 'playing' && (
-        <div className="flex-1 flex gap-3 p-3 min-h-0">
-          {/* Left column */}
-          <div className="w-64 flex flex-col gap-3 shrink-0">
-            <div className="bg-surface rounded-xl border border-border p-3 space-y-3">
-              <HealthBar
-                current={game.player.hp}
-                max={game.player.maxHp}
-                label="Your HP"
-                side="left"
-                isFlashing={hitFlash === 'player'}
-                shieldActive={game.player.shieldActive}
-              />
-              <CurrencyDisplay coins={game.player.coins} maxCoins={MAX_COINS} side="left" />
-            </div>
-            <div className="flex-1 bg-surface rounded-xl border border-border overflow-hidden min-h-0">
-              <MoveHistory />
-            </div>
-          </div>
+                    {/* Entry fee / Prize */}
+                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-surface-2 border border-border mb-3">
+                      <div className="text-center">
+                        <p className="text-[9px] font-mono text-text-muted">ENTRY FEE</p>
+                        <p className="text-sm font-mono font-bold text-neon-yellow">${selectedOpponent.entryFee}</p>
+                      </div>
+                      <span className="text-text-muted">{'\u2192'}</span>
+                      <div className="text-center">
+                        <p className="text-[9px] font-mono text-text-muted">PRIZE</p>
+                        <p className="text-sm font-mono font-bold text-neon-green">${selectedOpponent.prizePool}</p>
+                      </div>
+                    </div>
 
-          {/* Center */}
-          <div className="flex-1 flex flex-col gap-3 min-w-0">
-            <div className="flex-1 min-h-0">
-              <BattleArena />
-            </div>
+                    <motion.button
+                      whileHover={canAffordEntry ? { scale: 1.02 } : {}}
+                      whileTap={canAffordEntry ? { scale: 0.98 } : {}}
+                      onClick={handleStartMatch}
+                      disabled={!canAffordEntry || isWritePending}
+                      className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${canAffordEntry
+                          ? 'bg-neon-cyan text-black shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)]'
+                          : 'bg-surface-3 text-text-muted cursor-not-allowed'
+                        }`}
+                    >
+                      {canAffordEntry ? 'START MATCH' : 'INSUFFICIENT FUNDS'}
+                    </motion.button>
 
-            {/* AI Thinking Caption — TASK 4 */}
-            <AnimatePresence>
-              {dialogue.currentLine && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface border border-border"
-                >
-                  <span className="text-lg">{selectedOpponent?.avatar || '\uD83E\uDD16'}</span>
-                  <div className="flex-1 min-w-0">
-                    <span className="text-[10px] font-mono font-bold" style={{ color: selectedOpponent?.color || '#FF00E5' }}>
-                      {selectedOpponent?.name || 'AI'}
-                    </span>
-                    <p className="text-xs text-text-secondary italic truncate">
-                      &ldquo;{dialogue.currentLine.text}&rdquo;
-                    </p>
+                    {!canAffordEntry && (
+                      <p className="text-[9px] text-neon-red font-mono text-center mt-1">
+                        Need ${selectedOpponent.entryFee} USDT (Balance: ${playerBalance})
+                      </p>
+                    )}
                   </div>
-                  {aiThinking && (
-                    <span className="text-[9px] font-mono text-text-muted shrink-0">
-                      {Math.round(aiThinking.confidence * 100)}% confident
-                    </span>
-                  )}
-                </motion.div>
+
+                  {/* Leaderboard preview */}
+                  <div className="bg-surface rounded-xl border border-border p-3 flex-1 overflow-y-auto">
+                    <Leaderboard />
+                  </div>
+                </>
+              ) : (
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="text-center">
+                    <span className="text-4xl block mb-3">{'\u2694\uFE0F'}</span>
+                    <p className="text-sm text-text-muted">Select an opponent to begin</p>
+                  </div>
+                </div>
               )}
-            </AnimatePresence>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-surface rounded-xl border border-border p-3"
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Select Move</span>
-                <span className="text-[9px] font-mono text-text-muted">(Keys 1-5)</span>
-                {selectedOpponent && (
-                  <span className="text-[9px] font-mono ml-auto" style={{ color: selectedOpponent.color }}>
-                    vs {selectedOpponent.name} {selectedOpponent.title}
-                  </span>
-                )}
-              </div>
-              <MoveSelector />
-            </motion.div>
+            </div>
           </div>
+        )}
 
-          {/* Right column */}
-          <div className="w-64 flex flex-col gap-3 shrink-0">
-            <div className="bg-surface rounded-xl border border-border p-3 space-y-3">
-              <HealthBar
-                current={game.ai.hp}
-                max={game.ai.maxHp}
-                label={selectedOpponent ? selectedOpponent.name : 'AI HP'}
-                side="right"
-                isFlashing={hitFlash === 'ai'}
-                shieldActive={game.ai.shieldActive}
-              />
-              <CurrencyDisplay coins={game.ai.coins} maxCoins={MAX_COINS} side="right" />
+        {/* === PLAYING SCREEN === */}
+        {screen === 'playing' && (
+          <div className="flex-1 flex gap-3 p-3 min-h-0">
+            {/* Left column */}
+            <div className="w-64 flex flex-col gap-3 shrink-0">
+              <div className="bg-surface rounded-xl border border-border p-3 space-y-3">
+                <HealthBar
+                  current={game.player.hp}
+                  max={game.player.maxHp}
+                  label="Your HP"
+                  side="left"
+                  isFlashing={hitFlash === 'player'}
+                  shieldActive={game.player.shieldActive}
+                />
+                <CurrencyDisplay coins={game.player.coins} maxCoins={MAX_COINS} side="left" />
+              </div>
+              <div className="flex-1 bg-surface rounded-xl border border-border overflow-hidden min-h-0">
+                <MoveHistory />
+              </div>
             </div>
 
-            {/* Opponent ERC-8004 identity during battle — TASK 3 */}
-            {selectedOpponent && (
-              <div className="bg-surface rounded-xl border border-border p-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg">{selectedOpponent.avatar}</span>
-                  <div>
-                    <p className="text-xs font-bold text-text-primary">{selectedOpponent.name}</p>
-                    <p className="text-[9px] font-mono" style={{ color: selectedOpponent.color }}>{selectedOpponent.title}</p>
-                  </div>
-                </div>
-                <div className="space-y-0.5 text-[9px] font-mono">
-                  <div className="flex justify-between">
-                    <span className="text-text-muted">ERC-8004</span>
-                    <span className="text-neon-cyan">{selectedNPC?.agentId || `#${selectedOpponent.identity.tokenId}`}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-text-muted">Rep</span>
-                    <span className="text-neon-green">{selectedNPC?.reputation || selectedOpponent.identity.reputationScore}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-text-muted">Record</span>
-                    <span><span className="text-neon-green">{selectedOpponent.identity.totalWins}W</span> / <span className="text-neon-red">{selectedOpponent.identity.totalLosses}L</span></span>
-                  </div>
-                </div>
+            {/* Center */}
+            <div className="flex-1 flex flex-col gap-3 min-w-0">
+              <div className="flex-1 min-h-0">
+                <BattleArena />
               </div>
-            )}
 
-            {/* Moves in flight */}
-            <div className="bg-surface rounded-xl border border-border p-3 flex-1">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-1.5 h-1.5 rounded-full bg-neon-orange animate-pulse" />
-                <span className="text-xs font-mono text-text-secondary uppercase tracking-wider">
-                  Moves In Flight
-                </span>
-              </div>
+              {/* AI Thinking Caption TASK 4 */}
               <AnimatePresence>
-                {game.movesInFlight.length === 0 ? (
-                  <p className="text-xs text-text-muted font-mono text-center py-4">No moves in flight</p>
-                ) : (
-                  <div className="space-y-2">
-                    {game.movesInFlight.map(move => {
-                      const isPlayer = move.owner === 'player';
-                      return (
-                        <motion.div
-                          key={move.id}
-                          initial={{ opacity: 0, x: 10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -10 }}
-                          className="flex items-center gap-2 p-2 rounded-lg bg-surface-2 border border-border"
-                        >
-                          <span className={`text-[10px] font-mono font-bold ${isPlayer ? 'text-neon-cyan' : 'text-neon-magenta'}`}>
-                            {isPlayer ? 'YOU' : 'AI'}
-                          </span>
-                          <span className="text-xs">{move.type.replace(/_/g, ' ')}</span>
-                          <span className="text-[10px] font-mono text-neon-orange ml-auto">{move.blocksRemaining}b</span>
-                          <div className="w-12 h-1.5 rounded-full bg-surface-3 overflow-hidden">
-                            <motion.div
-                              className="h-full bg-neon-orange rounded-full"
-                              animate={{ width: `${((move.totalBlocks - move.blocksRemaining) / move.totalBlocks) * 100}%` }}
-                            />
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
+                {dialogue.currentLine && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface border border-border"
+                  >
+                    <span className="text-lg">{selectedOpponent?.avatar || '\uD83E\uDD16'}</span>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[10px] font-mono font-bold" style={{ color: selectedOpponent?.color || '#FF00E5' }}>
+                        {selectedOpponent?.name || 'AI'}
+                      </span>
+                      <p className="text-xs text-text-secondary italic truncate">
+                        &ldquo;{dialogue.currentLine.text}&rdquo;
+                      </p>
+                    </div>
+                    {aiThinking && (
+                      <span className="text-[9px] font-mono text-text-muted shrink-0">
+                        {Math.round(aiThinking.confidence * 100)}% confident
+                      </span>
+                    )}
+                  </motion.div>
                 )}
               </AnimatePresence>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-surface rounded-xl border border-border p-3"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Select Move</span>
+                  <span className="text-[9px] font-mono text-text-muted">(Keys 1-5)</span>
+                  {selectedOpponent && (
+                    <span className="text-[9px] font-mono ml-auto" style={{ color: selectedOpponent.color }}>
+                      vs {selectedOpponent.name} {selectedOpponent.title}
+                    </span>
+                  )}
+                </div>
+                <MoveSelector />
+              </motion.div>
+            </div>
+
+            {/* Right column */}
+            <div className="w-64 flex flex-col gap-3 shrink-0">
+              <div className="bg-surface rounded-xl border border-border p-3 space-y-3">
+                <HealthBar
+                  current={game.ai.hp}
+                  max={game.ai.maxHp}
+                  label={selectedOpponent ? selectedOpponent.name : 'AI HP'}
+                  side="right"
+                  isFlashing={hitFlash === 'ai'}
+                  shieldActive={game.ai.shieldActive}
+                />
+                <CurrencyDisplay coins={game.ai.coins} maxCoins={MAX_COINS} side="right" />
+              </div>
+
+              {/* Opponent ERC-8004 identity during battle TASK 3 */}
+              {selectedOpponent && (
+                <div className="bg-surface rounded-xl border border-border p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-lg">{selectedOpponent.avatar}</span>
+                    <div>
+                      <p className="text-xs font-bold text-text-primary">{selectedOpponent.name}</p>
+                      <p className="text-[9px] font-mono" style={{ color: selectedOpponent.color }}>{selectedOpponent.title}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-0.5 text-[9px] font-mono">
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">ERC-8004</span>
+                      <span className="text-neon-cyan">{selectedNPC?.agentId || `#${selectedOpponent.identity.tokenId}`}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Rep</span>
+                      <span className="text-neon-green">{selectedNPC?.reputation || selectedOpponent.identity.reputationScore}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Record</span>
+                      <span><span className="text-neon-green">{selectedOpponent.identity.totalWins}W</span> / <span className="text-neon-red">{selectedOpponent.identity.totalLosses}L</span></span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Moves in flight */}
+              <div className="bg-surface rounded-xl border border-border p-3 flex-1">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-neon-orange animate-pulse" />
+                  <span className="text-xs font-mono text-text-secondary uppercase tracking-wider">
+                    Moves In Flight
+                  </span>
+                </div>
+                <AnimatePresence>
+                  {game.movesInFlight.length === 0 ? (
+                    <p className="text-xs text-text-muted font-mono text-center py-4">No moves in flight</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {game.movesInFlight.map(move => {
+                        const isPlayer = move.owner === 'player';
+                        return (
+                          <motion.div
+                            key={move.id}
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            className="flex items-center gap-2 p-2 rounded-lg bg-surface-2 border border-border"
+                          >
+                            <span className={`text-[10px] font-mono font-bold ${isPlayer ? 'text-neon-cyan' : 'text-neon-magenta'}`}>
+                              {isPlayer ? 'YOU' : 'AI'}
+                            </span>
+                            <span className="text-xs">{move.type.replace(/_/g, ' ')}</span>
+                            <span className="text-[10px] font-mono text-neon-orange ml-auto">{move.blocksRemaining}b</span>
+                            <div className="w-12 h-1.5 rounded-full bg-surface-3 overflow-hidden">
+                              <motion.div
+                                className="h-full bg-neon-orange rounded-full"
+                                animate={{ width: `${((move.totalBlocks - move.blocksRemaining) / move.totalBlocks) * 100}%` }}
+                              />
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* === HISTORY SCREEN === */}
-      {screen === 'history' && (
-        <div className="flex-1 overflow-y-auto p-4 max-w-3xl mx-auto w-full">
-          <h2 className="text-lg font-bold text-text-primary mb-4">{'\uD83D\uDCDC'} Match History</h2>
-          <MatchHistoryList />
-        </div>
-      )}
+        {/* === HISTORY SCREEN === */}
+        {screen === 'history' && (
+          <div className="flex-1 overflow-y-auto p-4 max-w-3xl mx-auto w-full">
+            <h2 className="text-lg font-bold text-text-primary mb-4">{'\uD83D\uDCDC'} Match History</h2>
+            <MatchHistoryList />
+          </div>
+        )}
 
-      {/* === LEADERBOARD SCREEN === */}
-      {screen === 'leaderboard' && (
-        <div className="flex-1 overflow-y-auto p-4 max-w-2xl mx-auto w-full">
-          <Leaderboard />
-        </div>
-      )}
+        {/* === LEADERBOARD SCREEN === */}
+        {screen === 'leaderboard' && (
+          <div className="flex-1 overflow-y-auto p-4 max-w-2xl mx-auto w-full">
+            <Leaderboard />
+          </div>
+        )}
 
-      {/* === OVERLAYS === */}
-      <GameOverScreen />
-      <LootReveal />
+        {/* === OVERLAYS === */}
+        <GameOverScreen />
+        <LootReveal />
 
-      {/* MatchResult overlay — shown after game_over when user clicks "View Stats" */}
-      {showMatchResult && matchResultStats && (
-        <MatchResult
-          stats={matchResultStats}
-          onPlayAgain={() => { setShowMatchResult(false); returnToLobby(); startMatch(); }}
-          onMenu={() => { setShowMatchResult(false); returnToLobby(); }}
-          onViewLoot={latestMatch?.result === 'win' ? () => { setShowMatchResult(false); revealLoot(); } : undefined}
-        />
-      )}
-    </div>
+        {/* MatchResult overlay shown after game_over when user clicks "View Stats" */}
+        {showMatchResult && matchResultStats && (
+          <MatchResult
+            stats={matchResultStats}
+            onPlayAgain={() => { setShowMatchResult(false); returnToLobby(); startMatch(); }}
+            onMenu={() => { setShowMatchResult(false); returnToLobby(); }}
+            onViewLoot={latestMatch?.result === 'win' ? () => { setShowMatchResult(false); revealLoot(); } : undefined}
+          />
+        )}
+      </div>
     </WalletGate>
   );
 }
@@ -641,11 +638,10 @@ function TabButton({ active, onClick, label }: { active: boolean; onClick: () =>
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1 rounded-lg text-[10px] font-mono font-bold transition-colors ${
-        active
+      className={`px-3 py-1 rounded-lg text-[10px] font-mono font-bold transition-colors ${active
           ? 'bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/20'
           : 'bg-surface-2 text-text-muted border border-border hover:text-text-secondary'
-      }`}
+        }`}
     >
       {label}
     </button>

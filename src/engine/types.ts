@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon SDK — Engine Internal Types
+// Avalon SDK Engine Internal Types
 // The blockchain layer for any game. Extends core types with
 // engine-specific structures for state, combat, economy, chain sync.
 // ============================================================
@@ -349,7 +349,7 @@ export const MOVE_VISIBILITY: Record<MoveSpeed, boolean> = {
   slow: true,
 };
 
-// Revenue split defaults (basis points — 10000 = 100%)
+// Revenue split defaults (basis points 10000 = 100%)
 export const DEFAULT_PLATFORM_FEE = 500;   // 5%
 export const DEFAULT_CREATOR_FEE = 1000;   // 10%
 // Remaining 85% goes to prize pool

@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon AI — Dialogue System
+// Avalon AI Dialogue System
 // Template-based dialogue shaped by personality and mood
 // NPCs speak differently based on who they are
 // ============================================================
@@ -77,7 +77,7 @@ const MERCHANT_DIALOGUE: DialogueTemplate[] = [
   },
   {
     category: 'trade_negotiate',
-    templates: ['Hmm... I could go as low as {price}.', 'You drive a hard bargain. {price}, final offer.', 'Let\'s meet in the middle — {price}.'],
+    templates: ['Hmm... I could go as low as {price}.', 'You drive a hard bargain. {price}, final offer.', 'Let\'s meet in the middle {price}.'],
   },
   {
     category: 'farewell',
@@ -151,7 +151,7 @@ const TRICKSTER_DIALOGUE: DialogueTemplate[] = [
   },
   {
     category: 'farewell',
-    templates: ['Don\'t look for me. I\'ll find you.', 'Remember — you didn\'t see me.', 'Pleasure doing... whatever this was.'],
+    templates: ['Don\'t look for me. I\'ll find you.', 'Remember you didn\'t see me.', 'Pleasure doing... whatever this was.'],
   },
   {
     category: 'idle_chatter',
@@ -169,7 +169,7 @@ const SCHOLAR_DIALOGUE: DialogueTemplate[] = [
     templates: ['Ah, a seeker of knowledge! Welcome.', 'Do you come with questions? I have answers.', 'Knowledge is the truest currency. How may I help?'],
     moodVariants: {
       bored: ['Oh. It\'s you. What do you want?', 'I suppose you want something explained...'],
-      excited: ['I\'ve made a breakthrough! Let me tell you!', 'Fascinating! Come, come — you must see this!'],
+      excited: ['I\'ve made a breakthrough! Let me tell you!', 'Fascinating! Come, come you must see this!'],
     },
   },
   {
@@ -318,7 +318,7 @@ export class DialogueSystem {
   private applyStyle(text: string): string {
     const style = this.personality.getDialogueStyle();
 
-    // Low formality — add casual markers
+    // Low formality add casual markers
     if (style.formality < 30) {
       text = text.replace(/\bYou are\b/g, "You're");
       text = text.replace(/\bI am\b/g, "I'm");

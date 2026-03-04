@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon SDK — Match Manager
+// Avalon SDK Match Manager
 // Match lifecycle state machine:
 //   LOBBY → READY → COUNTDOWN → ACTIVE → COMPLETED → SETTLED
 // ============================================================
@@ -19,13 +19,13 @@ import type { Address } from '@/types';
 
 // Valid state transitions
 const VALID_TRANSITIONS: Record<EngineMatchPhase, EngineMatchPhase[]> = {
-  [EngineMatchPhase.LOBBY]:     [EngineMatchPhase.READY],
-  [EngineMatchPhase.READY]:     [EngineMatchPhase.COUNTDOWN, EngineMatchPhase.LOBBY],
+  [EngineMatchPhase.LOBBY]: [EngineMatchPhase.READY],
+  [EngineMatchPhase.READY]: [EngineMatchPhase.COUNTDOWN, EngineMatchPhase.LOBBY],
   [EngineMatchPhase.COUNTDOWN]: [EngineMatchPhase.ACTIVE],
-  [EngineMatchPhase.ACTIVE]:    [EngineMatchPhase.PAUSED, EngineMatchPhase.COMPLETED],
-  [EngineMatchPhase.PAUSED]:    [EngineMatchPhase.ACTIVE, EngineMatchPhase.COMPLETED],
+  [EngineMatchPhase.ACTIVE]: [EngineMatchPhase.PAUSED, EngineMatchPhase.COMPLETED],
+  [EngineMatchPhase.PAUSED]: [EngineMatchPhase.ACTIVE, EngineMatchPhase.COMPLETED],
   [EngineMatchPhase.COMPLETED]: [EngineMatchPhase.SETTLED],
-  [EngineMatchPhase.SETTLED]:   [],
+  [EngineMatchPhase.SETTLED]: [],
 };
 
 interface MatchTimeout {
@@ -60,7 +60,7 @@ export class MatchManager {
 
   // --- SDK API (matches docs) ---
 
-  /** createMatch(config) — Create a new match in LOBBY phase */
+  /** createMatch(config) Create a new match in LOBBY phase */
   createMatch(config: MatchConfig): MatchId {
     this.config = config;
     this.matchResult = null;
@@ -72,12 +72,12 @@ export class MatchManager {
       this.economySystem.configure({ currency: config.currency });
     }
 
-    // initialize() already sets phase to LOBBY — no transition needed
+    // initialize() already sets phase to LOBBY no transition needed
     this.events.emit('match:created', { matchId: config.matchId, createdBy: config.createdBy });
     return config.matchId;
   }
 
-  /** joinMatch(matchId, playerId, name, address?) — Join an existing match */
+  /** joinMatch(matchId, playerId, name, address?) Join an existing match */
   joinMatch(playerId: PlayerId, name: string, address?: Address): boolean {
     if (!this.config) return false;
 
@@ -130,7 +130,7 @@ export class MatchManager {
     return true;
   }
 
-  /** startMatch(matchId) — Manually start a match (if all ready or forced) */
+  /** startMatch(matchId) Manually start a match (if all ready or forced) */
   startMatch(): boolean {
     const state = this.stateManager.getState();
     if (state.phase !== EngineMatchPhase.READY) return false;
@@ -140,12 +140,12 @@ export class MatchManager {
     return true;
   }
 
-  /** endMatch(matchId, result) — End match and compute results */
+  /** endMatch(matchId, result) End match and compute results */
   endMatch(winnerId: PlayerId | null): EngineMatchResult {
     return this.finishMatch(winnerId);
   }
 
-  /** settleMatch() — Settle on-chain after match completion */
+  /** settleMatch() Settle on-chain after match completion */
   settleMatch(): EngineMatchResult | null {
     const state = this.stateManager.getState();
     if (state.phase !== EngineMatchPhase.COMPLETED) return null;
@@ -302,7 +302,7 @@ export class MatchManager {
         });
       }
     } else {
-      // Draw — refund all players
+      // Draw refund all players
       for (const [id, player] of state.players) {
         if (this.config?.wagerAmount) {
           const refunded = this.economySystem.addCurrency(player, this.config.wagerAmount, 'refund');

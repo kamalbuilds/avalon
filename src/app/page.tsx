@@ -129,7 +129,7 @@ export default function Home() {
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted">
               Avalon is the blockchain backend for game developers. Build your game however
-              you want — we handle L1 deployment, AI agents, loot, and economies.
+              you want we handle L1 deployment, AI agents, loot, and economies.
             </p>
           </motion.div>
 
@@ -245,11 +245,10 @@ export default function Home() {
                 >
                   <GlowCard glowColor={step.color} className="h-full text-center">
                     <div className="mb-4 text-5xl font-black text-border-bright/80">{step.step}</div>
-                    <div className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ${
-                      step.color === "cyan" ? "bg-neon-cyan/10 text-neon-cyan" :
-                      step.color === "purple" ? "bg-neon-purple/10 text-neon-purple" :
-                      "bg-neon-green/10 text-neon-green"
-                    }`}>
+                    <div className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ${step.color === "cyan" ? "bg-neon-cyan/10 text-neon-cyan" :
+                        step.color === "purple" ? "bg-neon-purple/10 text-neon-purple" :
+                          "bg-neon-green/10 text-neon-green"
+                      }`}>
                       <Icon className="h-7 w-7" />
                     </div>
                     <h3 className="text-xl font-bold">{step.title}</h3>
@@ -286,7 +285,7 @@ export default function Home() {
               <GradientText gradient="avalanche">Action</GradientText>
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted">
-              Chronos Battle — a game where blockchain latency IS the game mechanic.
+              Chronos Battle a game where blockchain latency IS the game mechanic.
               Built entirely on Avalon.
             </p>
           </motion.div>
@@ -386,7 +385,7 @@ export default function Home() {
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-lg text-muted">
             Give your game its own Avalanche blockchain, autonomous AI agents with
-            real wallets, provably fair loot, and stablecoin economies — in minutes.
+            real wallets, provably fair loot, and stablecoin economies in minutes.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">

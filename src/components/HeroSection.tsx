@@ -76,7 +76,7 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.45, duration: 0.6 }}
         >
-          Build in Unity, Unreal, or React. Avalon handles the chain — your own{" "}
+          Build in Unity, Unreal, or React. Avalon handles the chain your own{" "}
           <span className="text-neon-cyan">Avalanche L1</span>,{" "}
           <span className="text-neon-purple">AI NPCs with wallets</span>,{" "}
           <span className="text-gold">stablecoin economies</span>, and{" "}

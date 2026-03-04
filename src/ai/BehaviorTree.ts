@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon AI — Behavior Tree
+// Avalon AI Behavior Tree
 // Selector, Sequence, and Leaf nodes for NPC decision-making
 // Composable tree structure that drives agent behavior
 // ============================================================
@@ -23,7 +23,7 @@ export interface BehaviorNode {
 export type ConditionFn = (perception: AgentPerception, memory: AgentMemory) => boolean;
 export type ActionFn = (perception: AgentPerception, memory: AgentMemory) => NodeStatus;
 
-/** Leaf node that checks a condition — returns success or failure */
+/** Leaf node that checks a condition returns success or failure */
 export class ConditionNode implements BehaviorNode {
   readonly name: string;
   private condition: ConditionFn;
@@ -37,10 +37,10 @@ export class ConditionNode implements BehaviorNode {
     return this.condition(perception, memory) ? 'success' : 'failure';
   }
 
-  reset(): void {}
+  reset(): void { }
 }
 
-/** Leaf node that executes an action — can return running for multi-tick actions */
+/** Leaf node that executes an action can return running for multi-tick actions */
 export class ActionNode implements BehaviorNode {
   readonly name: string;
   private action: ActionFn;
@@ -54,13 +54,13 @@ export class ActionNode implements BehaviorNode {
     return this.action(perception, memory);
   }
 
-  reset(): void {}
+  reset(): void { }
 }
 
 // --- Composite Nodes ---
 
 /**
- * Sequence — runs children left-to-right.
+ * Sequence runs children left-to-right.
  * Fails immediately on first child failure.
  * Succeeds when all children succeed.
  * Resumes from last running child.
@@ -87,7 +87,7 @@ export class SequenceNode implements BehaviorNode {
         return 'running';
       }
 
-      // success — move to next child
+      // success move to next child
       this.currentChild++;
     }
 
@@ -102,7 +102,7 @@ export class SequenceNode implements BehaviorNode {
 }
 
 /**
- * Selector — runs children left-to-right.
+ * Selector runs children left-to-right.
  * Succeeds immediately on first child success.
  * Fails when all children fail.
  * Resumes from last running child.
@@ -129,7 +129,7 @@ export class SelectorNode implements BehaviorNode {
         return 'running';
       }
 
-      // failure — try next child
+      // failure try next child
       this.currentChild++;
     }
 
@@ -240,7 +240,7 @@ export class DecisionNode implements BehaviorNode {
   private targetFn?: (perception: AgentPerception) => string | undefined;
   private positionFn?: (perception: AgentPerception) => { x: number; y: number } | undefined;
 
-  // Shared output — read by the BehaviorTreeRunner
+  // Shared output read by the BehaviorTreeRunner
   lastDecision: AgentDecision | null = null;
 
   constructor(config: {

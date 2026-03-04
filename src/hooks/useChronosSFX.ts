@@ -1,5 +1,5 @@
 // ============================================================================
-// Chronos Battle — Sound Effect Hooks
+// Chronos Battle Sound Effect Hooks
 // Infrastructure for game audio. Plays nothing now but is wired to game events.
 // When audio files are added, just update the play() calls.
 // ============================================================================
@@ -49,7 +49,7 @@ export function useChronosSFX() {
       }
       audio.volume = Math.max(0, Math.min(1, volume));
       audio.currentTime = 0;
-      audio.play().catch(() => {}); // Ignore autoplay restrictions
+      audio.play().catch(() => { }); // Ignore autoplay restrictions
     } catch {
       // Audio not available
     }

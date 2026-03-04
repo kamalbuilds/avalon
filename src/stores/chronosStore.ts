@@ -1,5 +1,5 @@
 // ============================================================================
-// Chronos Battle — Zustand Game Store (v2)
+// Chronos Battle Zustand Game Store (v2)
 // Named opponents, USDT economy, match history, loot drops
 // ============================================================================
 
@@ -112,7 +112,7 @@ interface ChronosStore {
   matchEntryFee: string;
   matchPrize: string;
 
-  // NPC profile (from ai/npcs — for dialogue hooks and bridge)
+  // NPC profile (from ai/npcs for dialogue hooks and bridge)
   npcProfile: ChronosNPCProfile | null;
   aiThinking: AIThinkingState | null;
 

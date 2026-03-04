@@ -1,7 +1,7 @@
 "use client";
 
 // ============================================================================
-// useAvalon — Master React hook for the Avalon SDK
+// useAvalon Master React hook for the Avalon SDK
 // Gives any component access to L1, agents, VRF, economy, and wallet state.
 // ============================================================================
 

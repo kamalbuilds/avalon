@@ -13,7 +13,7 @@ export const CHAIN_IDS = {
 } as const;
 
 // ---------------------------------------------------------------------------
-// Contract Addresses (Placeholders — updated at deploy time)
+// Contract Addresses (Placeholders updated at deploy time)
 // ---------------------------------------------------------------------------
 
 export const CONTRACTS = {
@@ -25,7 +25,7 @@ export const CONTRACTS = {
     VRF_COORDINATOR: '0x0000000000000000000000000000000000000000' as Address,
     LINK_TOKEN: '0x5947BB275c521040051D82396192181b413227A3' as Address, // real LINK on Avalanche
   },
-  // Fuji Testnet — deployed 2026-03-04
+  // Fuji Testnet deployed 2026-03-04
   FUJI: {
     GAME_FACTORY: '0x3f7FC08150709C22F1741A230351B59c36bCCc8a' as Address,
     AGENT_REGISTRY: '0x2636Ed9F3Aa33589810BE07B48ad9Be79de3Fd7F' as Address,

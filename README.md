@@ -4,25 +4,25 @@
 
 > Unity builds the graphics. Avalon powers the economy.
 
-Avalon is a blockchain gaming SDK that gives any game its own Avalanche L1 chain — with AI NPCs (ERC-8004), provably fair loot (Chainlink VRF), and stablecoin economies (Tether WDK). Game developers keep building in Unity, Unreal, or React. Avalon handles everything on-chain.
+Avalon is a blockchain gaming SDK that gives any game its own Avalanche L1 chain with AI NPCs (ERC-8004), provably fair loot (Chainlink VRF), and stablecoin economies (Tether WDK). Game developers keep building in Unity, Unreal, or React. Avalon handles everything on-chain.
 
-Built for the [Avalanche Build Games 2026](https://www.avax.network/buildgames) hackathon.
+Built for the [Avalanche Build Games 2026](https://www.avax.network/buildgames).
 
 ---
 
 ## The Problem
 
-Game developers want blockchain features — real economies, verifiable randomness, AI NPCs with wallets — but integration costs 6-12 months of blockchain engineering. Most studios give up or ship half-baked integrations. 90%+ of "blockchain games" are just games with a token stapled on.
+Game developers want blockchain features real economies, verifiable randomness, AI NPCs with wallets but integration costs 6-12 months of blockchain engineering. Most studios give up or ship half-baked integrations. 90%+ of "blockchain games" are just games with a token stapled on.
 
 ## The Solution
 
 Avalon is middleware. **Stripe for on-chain games.** Drop in the SDK and get:
 
-- **Own Avalanche L1** — Your game runs on its own sovereign chain, not shared with thousands of others
-- **ERC-8004 AI NPCs** — NPCs with on-chain wallets, personality, and autonomous economic behavior
-- **Chainlink VRF v2.5** — Provably fair loot drops players can verify on-chain
-- **Tether WDK Economy** — Real USDT entry fees, prize pools, and in-game purchases
-- **30-Second Onboarding** — Social login, embedded wallets, gas abstraction. No MetaMask.
+- **Own Avalanche L1** Your game runs on its own sovereign chain, not shared with thousands of others
+- **ERC-8004 AI NPCs** NPCs with on-chain wallets, personality, and autonomous economic behavior
+- **Chainlink VRF v2.5** Provably fair loot drops players can verify on-chain
+- **Tether WDK Economy** Real USDT entry fees, prize pools, and in-game purchases
+- **30-Second Onboarding** Social login, embedded wallets, gas abstraction. No MetaMask.
 
 ```typescript
 import { Avalon } from '@avalon/sdk';
@@ -33,7 +33,7 @@ const npc = await avalon.agents.create({ name: 'Iron Merchant', archetype: 'merc
 const loot = await avalon.vrf.roll({ player: '0x...', table: 'epic-chest' });
 ```
 
-## Chronos Battle — Demo Game
+## Chronos Battle Demo Game
 
 **Chronos Battle** is our showcase game where blockchain latency IS the core mechanic:
 
@@ -167,7 +167,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed technical architecture.
 
 ## Team
 
-- **Kamal Nayan Singh** — Builder
+- **Kamal Nayan Singh** Builder
 
 ## License
 

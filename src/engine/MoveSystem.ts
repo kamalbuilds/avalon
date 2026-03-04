@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon SDK — Move System
+// Avalon SDK Move System
 // Block-timed move queue, visibility, cost calculation, execution
 // ============================================================
 
@@ -150,7 +150,7 @@ export class MoveSystem {
       }
 
       default:
-        // walk, run, trade, interact, emote — no combat effects
+        // walk, run, trade, interact, emote no combat effects
         break;
     }
 

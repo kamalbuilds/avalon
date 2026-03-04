@@ -1,5 +1,5 @@
 // ============================================================================
-// Avalon — Integration Check
+// Avalon Integration Check
 // Validates that the application is properly wired to on-chain contracts.
 // Run via: import { runIntegrationCheck } from '@/lib/integration-check'
 // ============================================================================
@@ -37,7 +37,7 @@ export async function runIntegrationCheck(): Promise<CheckResult[]> {
     results.push({
       name: `Contract ${name} has non-zero address`,
       passed: !isZero,
-      detail: isZero ? `${name} is zero address — not deployed` : `${name} = ${addr}`,
+      detail: isZero ? `${name} is zero address not deployed` : `${name} = ${addr}`,
     });
   }
 
@@ -47,7 +47,7 @@ export async function runIntegrationCheck(): Promise<CheckResult[]> {
     name: 'USDT address configured',
     passed: !usdtZero,
     detail: usdtZero
-      ? 'USDT is zero — set NEXT_PUBLIC_USDT_ADDRESS env var'
+      ? 'USDT is zero set NEXT_PUBLIC_USDT_ADDRESS env var'
       : `usdt = ${CONTRACT_ADDRESSES.usdt}`,
   });
 

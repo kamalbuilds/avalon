@@ -1,7 +1,7 @@
 "use client";
 
 // ============================================================================
-// AvalonProvider — Wraps Web3Provider + Avalon SDK context
+// AvalonProvider Wraps Web3Provider + Avalon SDK context
 // All pages get access to Avalon features through this provider.
 // ============================================================================
 

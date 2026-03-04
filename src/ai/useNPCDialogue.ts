@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon AI — NPC Dialogue Hook
+// Avalon AI NPC Dialogue Hook
 // React hook for pre-match taunts, mid-match reactions,
 // and post-match comments based on personality
 // ============================================================

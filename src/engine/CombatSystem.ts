@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon SDK — Combat System
+// Avalon SDK Combat System
 // Health, damage, move interactions, combos, win conditions
 // ============================================================
 
@@ -13,8 +13,8 @@ import type { MoveType } from '@/types';
 
 // Move interaction table: [attacker move] vs [defender move] → modifier
 const INTERACTION_TABLE: Record<string, Record<string, number>> = {
-  attack:     { defend: 0.5, attack: 1.0, cast_spell: 1.2, use_item: 1.5 },
-  defend:     { attack: 0.0, defend: 0.0, cast_spell: 0.3, use_item: 0.0 },
+  attack: { defend: 0.5, attack: 1.0, cast_spell: 1.2, use_item: 1.5 },
+  defend: { attack: 0.0, defend: 0.0, cast_spell: 0.3, use_item: 0.0 },
   cast_spell: { defend: 0.8, attack: 0.7, cast_spell: 1.0, use_item: 1.3 },
 };
 

@@ -1,5 +1,5 @@
 // ============================================================================
-// Avalon — Typed Contract Interaction Layer
+// Avalon Typed Contract Interaction Layer
 // Provides typed wrappers around viem contract instances for all Avalon contracts.
 // ============================================================================
 
@@ -23,7 +23,7 @@ export interface ContractAddresses {
   stablecoinEconomy: Address;
 }
 
-// Default addresses — overridden at runtime when L1 deploys
+// Default addresses overridden at runtime when L1 deploys
 const DEFAULT_ADDRESSES: ContractAddresses = {
   gameFactory: '0x0000000000000000000000000000000000000000' as Address,
   chronosBattle: '0x0000000000000000000000000000000000000000' as Address,

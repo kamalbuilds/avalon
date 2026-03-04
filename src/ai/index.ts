@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon AI — Barrel Export
+// Avalon AI Barrel Export
 // The complete AI NPC system for Avalon SDK
 // ============================================================
 

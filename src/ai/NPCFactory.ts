@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon AI — NPC Factory
+// Avalon AI NPC Factory
 // Create fully wired NPCs from archetypes
 // Merchant, Guardian, Trickster, Scholar, Warrior
 // Each NPC: wallet + reputation + behavior tree + personality
@@ -66,7 +66,7 @@ function buildMerchantTree(): BehaviorTreeRunner {
     new SequenceNode('flee-if-danger', [
       new ConditionNode('low-health', (p) => (p.selfHealth / p.selfMaxHealth) < 0.25),
       new ConditionNode('has-threats', (p) => p.threats.length > 0),
-      new DecisionNode({ name: 'flee', action: 'flee', priority: 10, confidence: 0.95, reasoning: 'Merchant fleeing — health critical' }),
+      new DecisionNode({ name: 'flee', action: 'flee', priority: 10, confidence: 0.95, reasoning: 'Merchant fleeing health critical' }),
     ]),
     // Priority 2: Trade if someone is nearby and friendly
     new SequenceNode('trade-opportunity', [
@@ -109,7 +109,7 @@ function buildGuardianTree(): BehaviorTreeRunner {
         action: 'attack',
         priority: 9,
         confidence: 0.85,
-        reasoning: 'Threat detected — engaging',
+        reasoning: 'Threat detected engaging',
         targetFn: (p) => p.threats[0]?.entityId,
         positionFn: (p) => p.threats[0]?.position,
       }),
@@ -188,7 +188,7 @@ function buildScholarTree(): BehaviorTreeRunner {
         action: 'dialogue',
         priority: 7,
         confidence: 0.85,
-        reasoning: 'A student approaches — time to teach',
+        reasoning: 'A student approaches time to teach',
         targetFn: (p) => p.nearbyEntities[0]?.entityId,
       }),
     ]),

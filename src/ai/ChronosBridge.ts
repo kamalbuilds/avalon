@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon AI — Chronos Bridge
+// Avalon AI Chronos Bridge
 // Translates BehaviorTree decisions into Chronos Battle moves
 // Personality shapes which moves the AI prefers
 // ============================================================
@@ -50,7 +50,7 @@ export function getChronosBridgeDecision(
       npcId: npc.id,
       npcName: npc.name,
       chosenMove: 'quick_strike',
-      reasoning: 'No affordable moves — waiting for coins',
+      reasoning: 'No affordable moves waiting for coins',
       factors: [{ factor: 'economy', influence: 'negative', weight: 1, detail: 'Cannot afford any move' }],
       confidence: 0,
       alternativesConsidered: [],
@@ -122,7 +122,7 @@ export function getChronosBridgeDecision(
     // Counter without incoming is bad
     if (moveType === 'counter' && !hasIncoming) {
       score -= 30;
-      factors.push({ factor: 'counter-whiff', influence: 'negative', weight: 30, detail: 'No incoming moves to counter — risky' });
+      factors.push({ factor: 'counter-whiff', influence: 'negative', weight: 30, detail: 'No incoming moves to counter risky' });
     }
 
     // Patience: willing to shield and wait
@@ -130,7 +130,7 @@ export function getChronosBridgeDecision(
       const patienceBonus = (traits.patience / 100) * 15;
       score += patienceBonus;
       if (patienceBonus > 8) {
-        factors.push({ factor: 'patience', influence: 'positive', weight: patienceBonus, detail: 'Patient — willing to play defensive' });
+        factors.push({ factor: 'patience', influence: 'positive', weight: patienceBonus, detail: 'Patient willing to play defensive' });
       }
     }
 
@@ -140,49 +140,49 @@ export function getChronosBridgeDecision(
     if (hpPercent < 0.25) {
       if (moveType === 'shield' && !ai.shieldActive) {
         score += 20;
-        factors.push({ factor: 'survival', influence: 'positive', weight: 20, detail: 'Critical HP — need shield NOW' });
+        factors.push({ factor: 'survival', influence: 'positive', weight: 20, detail: 'Critical HP need shield NOW' });
       }
       if (moveType === 'counter' && hasIncoming) {
         score += 15;
-        factors.push({ factor: 'survival', influence: 'positive', weight: 15, detail: 'Critical HP — counter to survive' });
+        factors.push({ factor: 'survival', influence: 'positive', weight: 15, detail: 'Critical HP counter to survive' });
       }
     }
 
-    // Shield already active — don't stack
+    // Shield already active don't stack
     if (moveType === 'shield' && ai.shieldActive) {
       score -= 40;
-      factors.push({ factor: 'redundant', influence: 'negative', weight: 40, detail: 'Shield already active — no need for another' });
+      factors.push({ factor: 'redundant', influence: 'negative', weight: 40, detail: 'Shield already active no need for another' });
     }
 
     // Incoming damage threat
     if (hasIncoming && incomingDamage >= 25) {
       if (moveType === 'shield' && !ai.shieldActive) {
         score += 18;
-        factors.push({ factor: 'threat', influence: 'positive', weight: 18, detail: `${incomingDamage} damage incoming — shield up!` });
+        factors.push({ factor: 'threat', influence: 'positive', weight: 18, detail: `${incomingDamage} damage incoming shield up!` });
       }
       if (moveType === 'counter') {
         score += 20;
-        factors.push({ factor: 'threat', influence: 'positive', weight: 20, detail: `${incomingDamage} damage incoming — counter opportunity!` });
+        factors.push({ factor: 'threat', influence: 'positive', weight: 20, detail: `${incomingDamage} damage incoming counter opportunity!` });
       }
     }
 
     // Finishing blow opportunity
     if (playerHpPercent <= 0.3 && move.damage >= player.hp) {
       score += 25;
-      factors.push({ factor: 'finisher', influence: 'positive', weight: 25, detail: `Player at ${Math.round(playerHpPercent * 100)}% HP — can finish with ${move.name}!` });
+      factors.push({ factor: 'finisher', influence: 'positive', weight: 25, detail: `Player at ${Math.round(playerHpPercent * 100)}% HP can finish with ${move.name}!` });
     }
 
-    // Economy management — don't overspend
+    // Economy management don't overspend
     if (move.cost >= 3 && ai.coins <= 4) {
       const penalize = traits.greed > 60 ? 5 : 15;
       score -= penalize;
-      factors.push({ factor: 'economy', influence: 'negative', weight: penalize, detail: `Low coins (${ai.coins}) — expensive move risky` });
+      factors.push({ factor: 'economy', influence: 'negative', weight: penalize, detail: `Low coins (${ai.coins}) expensive move risky` });
     }
 
-    // Economy advantage — be aggressive
+    // Economy advantage be aggressive
     if (coinAdvantage > 3 && !move.isDefensive) {
       score += 8;
-      factors.push({ factor: 'economy-lead', influence: 'positive', weight: 8, detail: `Coin advantage (+${coinAdvantage}) — press the attack` });
+      factors.push({ factor: 'economy-lead', influence: 'positive', weight: 8, detail: `Coin advantage (+${coinAdvantage}) press the attack` });
     }
 
     return {

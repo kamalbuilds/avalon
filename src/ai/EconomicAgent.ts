@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon AI — Economic Agent
+// Avalon AI Economic Agent
 // Autonomous buy/sell/trade decisions for NPC wallets
 // Each NPC owns a wallet and makes economic choices
 // ============================================================
@@ -171,7 +171,7 @@ export class EconomicAgent {
       return { action: 'hold', confidence: 1, reasoning: 'Cannot afford this item' };
     }
 
-    // Value ratio — how good is the deal?
+    // Value ratio how good is the deal?
     const valueRatio = perceived / askPrice;
     let confidence = 0;
 
@@ -199,7 +199,7 @@ export class EconomicAgent {
       confidence *= 0.5;
     }
 
-    // Hoarding check — already have too many items?
+    // Hoarding check already have too many items?
     const inventoryFullness = this.inventory.length / this.maxInventorySlots;
     if (inventoryFullness > 0.8 && bias.hoarding < 50) {
       confidence *= 0.5;
@@ -223,7 +223,7 @@ export class EconomicAgent {
     const bias = this.personality.getEconomicBias();
     const perceived = this.getPerceivedValue(item);
 
-    // No bid — create listing
+    // No bid create listing
     if (bidPrice === undefined) {
       // Markup based on greed
       const markup = 1 + (this.personality.getTraits().greed / 200); // 1.0 to 1.5
@@ -246,7 +246,7 @@ export class EconomicAgent {
       return { action: 'sell', item, price: bidPrice, confidence: 0.6 * (bias.sellWillingness / 100), reasoning: 'Fair price' };
     }
 
-    // Too low — negotiate
+    // Too low negotiate
     if (bias.priceFlexibility > 50) {
       const counter = Math.ceil(perceived * 1.1);
       return { action: 'negotiate', item, price: counter, confidence: 0.5, reasoning: `Bid too low, counter at ${counter}` };

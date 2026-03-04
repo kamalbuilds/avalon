@@ -16,11 +16,11 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Avalon — Blockchain Gaming SDK for Avalanche",
+  title: "Avalon Blockchain Gaming SDK for Avalanche",
   description:
-    "The blockchain layer for any game. Deploy on your own Avalanche L1 with AI NPCs, Chainlink VRF, and stablecoin economies. Build in Unity, Unreal, or React — we handle the chain.",
+    "The blockchain layer for any game. Deploy on your own Avalanche L1 with AI NPCs, Chainlink VRF, and stablecoin economies. Build in Unity, Unreal, or React we handle the chain.",
   openGraph: {
-    title: "Avalon — Blockchain Gaming SDK for Avalanche",
+    title: "Avalon Blockchain Gaming SDK for Avalanche",
     description:
       "Unity builds the graphics. Avalon powers the economy. Deploy on your own Avalanche L1 with ERC-8004 AI agents, Chainlink VRF loot, and USDT economies.",
     siteName: "Avalon",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Avalon — Blockchain Gaming SDK",
+    title: "Avalon Blockchain Gaming SDK",
     description:
       "The Stripe for on-chain games. Deploy on Avalanche L1 with AI agents, fair loot, and real economies.",
   },

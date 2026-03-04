@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon AI — NPC Personality Hook
+// Avalon AI NPC Personality Hook
 // React hook exposing personality, mood, and economic data
 // for NPC profile cards and battle UI
 // ============================================================

@@ -1,5 +1,5 @@
 // ============================================================================
-// Chronos Battle — Move Definitions
+// Chronos Battle Move Definitions
 // Blockchain latency IS the mechanic: cheap = slow, expensive = fast
 // ============================================================================
 
@@ -78,7 +78,7 @@ export const MOVES: Record<ChronosMoveType, ChronosMove> = {
     description: 'Instant. Deals double damage IF opponent has a move in flight.',
     cost: 2,
     delay: 0,
-    damage: 0, // dynamic — doubles the incoming move's damage
+    damage: 0, // dynamic doubles the incoming move's damage
     isDefensive: false,
     icon: '\uD83D\uDD04',
     color: '#B026FF',

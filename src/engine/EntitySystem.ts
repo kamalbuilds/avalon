@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon SDK — Entity System (ECS)
+// Avalon SDK Entity System (ECS)
 // Create, destroy, query entities and their components
 // ============================================================
 

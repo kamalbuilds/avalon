@@ -1,5 +1,5 @@
 // ============================================================================
-// Chronos Battle — AI Opponent
+// Chronos Battle AI Opponent
 // Smart AI that watches for incoming moves, manages economy, and adapts
 // ============================================================================
 
@@ -167,7 +167,7 @@ function balancedStrategy(affordable: ChronosMoveType[], ctx: StrategyContext): 
   return { move: affordable[0], reason: 'best available' };
 }
 
-// AI decision timing — varies by personality to feel more human
+// AI decision timing varies by personality to feel more human
 export function getAIReactionTime(personality: AIPersonality): number {
   const base = {
     aggressive: 800,

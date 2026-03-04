@@ -1,5 +1,5 @@
 // ============================================================================
-// Chronos Battle — Game Engine
+// Chronos Battle Game Engine
 // Core game loop, block simulation, move processing
 // ============================================================================
 
@@ -146,7 +146,7 @@ export function launchMove(
   stats.coinsSpent += move.cost;
 
   if (moveType === 'counter') {
-    // Counter is instant — check if opponent has moves in flight
+    // Counter is instant check if opponent has moves in flight
     const opponentMoves = newState.movesInFlight.filter(m => m.owner === target);
     if (opponentMoves.length > 0) {
       // Counter succeeds: deal double damage of the strongest incoming move
@@ -191,7 +191,7 @@ export function launchMove(
         owner,
         moveType: 'counter',
         damage: 0,
-        message: `${owner === 'player' ? 'Your' : 'AI\'s'} counter whiffed — no moves to counter!`,
+        message: `${owner === 'player' ? 'Your' : 'AI\'s'} counter whiffed no moves to counter!`,
         timestamp: Date.now(),
         block: newState.currentBlock,
       });
@@ -262,7 +262,7 @@ export function launchMove(
       });
     }
   } else {
-    // Delayed move — add to flight
+    // Delayed move add to flight
     newState.movesInFlight.push({
       id: nextMoveId(),
       owner,

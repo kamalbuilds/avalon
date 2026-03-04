@@ -1,5 +1,5 @@
 // ============================================================================
-// Avalon — Core Type Definitions
+// Avalon Core Type Definitions
 // The blockchain layer for any game. Deploy on your own Avalanche L1
 // with AI NPCs, Chainlink VRF, and stablecoin economies.
 // ============================================================================
@@ -138,7 +138,7 @@ export interface PlayerStats {
 }
 
 // ---------------------------------------------------------------------------
-// AI NPCs — ERC-8004 Agent Identity
+// AI NPCs ERC-8004 Agent Identity
 // ---------------------------------------------------------------------------
 
 export interface AgentIdentity {
@@ -204,7 +204,7 @@ export interface NpcMemoryEntry {
 }
 
 // ---------------------------------------------------------------------------
-// Blockchain — Avalanche L1 Configuration
+// Blockchain Avalanche L1 Configuration
 // ---------------------------------------------------------------------------
 
 export interface L1Config {
@@ -398,7 +398,7 @@ export interface EditorAction {
 }
 
 // ---------------------------------------------------------------------------
-// Stablecoin Economy — Tether WDK
+// Stablecoin Economy Tether WDK
 // ---------------------------------------------------------------------------
 
 export interface StablecoinEconomy {
@@ -563,7 +563,7 @@ export interface PaginatedResponse<T> {
 }
 
 // ---------------------------------------------------------------------------
-// Integration Types — Contract Layer & Wallet State
+// Integration Types Contract Layer & Wallet State
 // ---------------------------------------------------------------------------
 
 export interface ContractAddresses {

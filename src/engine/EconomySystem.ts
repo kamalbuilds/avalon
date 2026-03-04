@@ -1,5 +1,5 @@
 // ============================================================
-// Avalon SDK — Economy System
+// Avalon SDK Economy System
 // Stablecoin economy: deposits, withdrawals, balances,
 // prize pools, platform fees, loot drops.
 // Wired to StablecoinEconomy contract types.
@@ -49,7 +49,7 @@ export class EconomySystem {
 
   // --- SDK API (matches docs: avalon.economy.*) ---
 
-  /** avalon.economy.deposit(playerId, amount) — Add funds for a player */
+  /** avalon.economy.deposit(playerId, amount) Add funds for a player */
   deposit(playerId: PlayerId, amount: number, address?: Address): PlayerBalance {
     const existing = this.economy.playerBalances.get(playerId) ?? {
       playerId, address, deposited: 0, withdrawn: 0, inGame: 0, available: 0,
@@ -71,7 +71,7 @@ export class EconomySystem {
     return updated;
   }
 
-  /** avalon.economy.withdraw(playerId, amount) — Withdraw available funds */
+  /** avalon.economy.withdraw(playerId, amount) Withdraw available funds */
   withdraw(playerId: PlayerId, amount: number): PlayerBalance | null {
     const balance = this.economy.playerBalances.get(playerId);
     if (!balance || balance.available < amount) return null;
@@ -91,12 +91,12 @@ export class EconomySystem {
     return updated;
   }
 
-  /** avalon.economy.getBalance(playerId) — Get player balance */
+  /** avalon.economy.getBalance(playerId) Get player balance */
   getBalance(playerId: PlayerId): PlayerBalance | undefined {
     return this.economy.playerBalances.get(playerId);
   }
 
-  /** avalon.economy.transfer(from, to, amount) — Transfer between players */
+  /** avalon.economy.transfer(from, to, amount) Transfer between players */
   transfer(fromId: PlayerId, toId: PlayerId, amount: number): boolean {
     const from = this.economy.playerBalances.get(fromId);
     if (!from || from.available < amount) return false;
@@ -117,7 +117,7 @@ export class EconomySystem {
     return true;
   }
 
-  /** avalon.economy.distributePrize(matchId) — Distribute prize pool with fee splits */
+  /** avalon.economy.distributePrize(matchId) Distribute prize pool with fee splits */
   distributePrize(
     matchId: string,
     winnerId: PlayerId,

@@ -67,7 +67,7 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <EmptyState
           preset="connect-wallet"
-          onAction={() => {}}
+          onAction={() => { }}
           actionLabel="Connect Wallet"
         />
         <div className="flex justify-center mt-4">
@@ -145,18 +145,18 @@ export default function DashboardPage() {
       >
         {isStatsLoading
           ? Array.from({ length: 4 }).map((_, i) => (
-              <SkeletonStatCard key={i} />
-            ))
+            <SkeletonStatCard key={i} />
+          ))
           : stats.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08 }}
-              >
-                <StatCard {...stat} />
-              </motion.div>
-            ))}
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.08 }}
+            >
+              <StatCard {...stat} />
+            </motion.div>
+          ))}
       </motion.div>
 
       <div className="mt-10 grid gap-8 lg:grid-cols-3">
@@ -219,7 +219,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* AI Agents — On-chain count */}
+          {/* AI Agents On-chain count */}
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold flex items-center gap-2">
@@ -274,7 +274,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Right column — Activity Feed */}
+        {/* Right column Activity Feed */}
         <div>
           <h2 className="mb-4 text-lg font-semibold flex items-center gap-2">
             <Activity className="h-5 w-5 text-neon-green" />

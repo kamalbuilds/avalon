@@ -10,7 +10,7 @@ import type {
 } from "@/types";
 
 // ---------------------------------------------------------------------------
-// Game Store — tracks active matches, player stats, chain, pending txns
+// Game Store tracks active matches, player stats, chain, pending txns
 // ---------------------------------------------------------------------------
 
 interface PendingTransaction {
@@ -45,26 +45,26 @@ interface GameStore {
     sortBy: "newest" | "popular" | "rating";
   };
 
-  // Actions — Games
+  // Actions Games
   setGames: (games: Game[]) => void;
   setCurrentGame: (game: Game | null) => void;
   addGame: (game: Game) => void;
   updateGame: (id: string, updates: Partial<Game>) => void;
 
-  // Actions — Matches
+  // Actions Matches
   setCurrentMatch: (match: MatchState | null) => void;
   addMatchToHistory: (match: MatchState) => void;
 
-  // Actions — Chain
+  // Actions Chain
   setConnectedChainId: (chainId: ChainId | null) => void;
   setL1Connected: (connected: boolean) => void;
 
-  // Actions — Transactions
+  // Actions Transactions
   addPendingTransaction: (tx: PendingTransaction) => void;
   updateTransactionStatus: (hash: string, status: TransactionStatus) => void;
   clearCompletedTransactions: () => void;
 
-  // Actions — UI
+  // Actions UI
   setLoading: (loading: boolean) => void;
   setFilter: (filter: Partial<GameStore["filter"]>) => void;
 }
