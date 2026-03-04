@@ -61,7 +61,7 @@ const OPPONENT_TO_NPC_ID: Record<string, string> = {
   kael: 'kael-warrior',
   nova: 'nova-trickster',
   sage: 'sage-scholar',
-  iron_guardian: 'iron-guardian',
+  iron: 'iron-guardian',
 };
 
 export function getNPCForOpponent(opponent: ChronosOpponent): ChronosNPCProfile | null {
