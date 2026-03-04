@@ -1,7 +1,7 @@
 "use client";
 
-import { useReadContract, useWriteContract, useWatchContractEvent } from "wagmi";
-import { parseEther, type Address } from "viem";
+import { useReadContract, useWriteContract } from "wagmi";
+import { type Address } from "viem";
 import { ChronosBattleABI } from "@/lib/contracts/abis/ChronosBattle";
 import { AgentRegistryABI } from "@/lib/contracts/abis/AgentRegistry";
 import { StablecoinEconomyABI } from "@/lib/contracts/abis/StablecoinEconomy";
@@ -26,14 +26,6 @@ export function useChronosBattle() {
     abi: ChronosBattleABI,
     functionName: "entryFee",
   });
-
-  const getMatch = (matchId: bigint) =>
-    useReadContract({
-      address: CONTRACT_ADDRESSES.chronosBattle,
-      abi: ChronosBattleABI,
-      functionName: "getMatch",
-      args: [matchId],
-    });
 
   const createMatch = (fee: bigint) => {
     writeContract({
@@ -75,7 +67,6 @@ export function useChronosBattle() {
   return {
     matchCount: matchCount as bigint | undefined,
     entryFee: entryFee as bigint | undefined,
-    getMatch,
     createMatch,
     joinMatch,
     submitMove,
@@ -83,6 +74,17 @@ export function useChronosBattle() {
     isWritePending,
     txHash,
   };
+}
+
+/** Read a specific match by ID — proper hook (call at top level only) */
+export function useMatch(matchId: bigint | undefined) {
+  return useReadContract({
+    address: CONTRACT_ADDRESSES.chronosBattle,
+    abi: ChronosBattleABI,
+    functionName: "getMatch",
+    args: matchId !== undefined ? [matchId] : undefined,
+    query: { enabled: matchId !== undefined },
+  });
 }
 
 // ============================================================================
@@ -98,22 +100,6 @@ export function useAgentRegistry() {
     functionName: "totalSupply",
   });
 
-  const getAgent = (tokenId: bigint) =>
-    useReadContract({
-      address: CONTRACT_ADDRESSES.agentRegistry,
-      abi: AgentRegistryABI,
-      functionName: "getAgent",
-      args: [tokenId],
-    });
-
-  const getAgentsByOwner = (owner: Address) =>
-    useReadContract({
-      address: CONTRACT_ADDRESSES.agentRegistry,
-      abi: AgentRegistryABI,
-      functionName: "getAgentsByOwner",
-      args: [owner],
-    });
-
   const registerAgent = (name: string, agentURI: string) => {
     writeContract({
       address: CONTRACT_ADDRESSES.agentRegistry,
@@ -125,11 +111,31 @@ export function useAgentRegistry() {
 
   return {
     totalAgents: totalSupply as bigint | undefined,
-    getAgent,
-    getAgentsByOwner,
     registerAgent,
     isWritePending,
   };
+}
+
+/** Read a specific agent by token ID */
+export function useAgent(tokenId: bigint | undefined) {
+  return useReadContract({
+    address: CONTRACT_ADDRESSES.agentRegistry,
+    abi: AgentRegistryABI,
+    functionName: "getAgent",
+    args: tokenId !== undefined ? [tokenId] : undefined,
+    query: { enabled: tokenId !== undefined },
+  });
+}
+
+/** Read agents owned by an address */
+export function useAgentsByOwner(owner: Address | undefined) {
+  return useReadContract({
+    address: CONTRACT_ADDRESSES.agentRegistry,
+    abi: AgentRegistryABI,
+    functionName: "getAgentsByOwner",
+    args: owner ? [owner] : undefined,
+    query: { enabled: !!owner },
+  });
 }
 
 // ============================================================================
@@ -145,14 +151,6 @@ export function useStablecoinEconomy() {
     functionName: "getAcceptedTokens",
   });
 
-  const getPrizePool = (gameId: bigint, token: Address) =>
-    useReadContract({
-      address: CONTRACT_ADDRESSES.stablecoinEconomy,
-      abi: StablecoinEconomyABI,
-      functionName: "getPrizePool",
-      args: [gameId, token],
-    });
-
   const payEntryFee = (gameId: bigint, token: Address, amount: bigint) => {
     writeContract({
       address: CONTRACT_ADDRESSES.stablecoinEconomy,
@@ -164,10 +162,20 @@ export function useStablecoinEconomy() {
 
   return {
     acceptedTokens: acceptedTokens as Address[] | undefined,
-    getPrizePool,
     payEntryFee,
     isWritePending,
   };
+}
+
+/** Read prize pool for a specific game/token pair */
+export function usePrizePool(gameId: bigint | undefined, token: Address | undefined) {
+  return useReadContract({
+    address: CONTRACT_ADDRESSES.stablecoinEconomy,
+    abi: StablecoinEconomyABI,
+    functionName: "getPrizePool",
+    args: gameId !== undefined && token ? [gameId, token] : undefined,
+    query: { enabled: gameId !== undefined && !!token },
+  });
 }
 
 // ============================================================================
@@ -181,16 +189,18 @@ export function useLootVRF() {
     functionName: "totalDrops",
   });
 
-  const getPlayerDrops = (player: Address) =>
-    useReadContract({
-      address: CONTRACT_ADDRESSES.lootVRF,
-      abi: LootVRFABI,
-      functionName: "getPlayerDrops",
-      args: [player],
-    });
-
   return {
     totalDrops: totalDrops as bigint | undefined,
-    getPlayerDrops,
   };
+}
+
+/** Read loot drops for a specific player */
+export function usePlayerDrops(player: Address | undefined) {
+  return useReadContract({
+    address: CONTRACT_ADDRESSES.lootVRF,
+    abi: LootVRFABI,
+    functionName: "getPlayerDrops",
+    args: player ? [player] : undefined,
+    query: { enabled: !!player },
+  });
 }

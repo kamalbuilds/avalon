@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { MOVES } from '@/engine/chronos/moves';
 import type { MoveInFlight as MoveInFlightType } from '@/engine/chronos/ChronosEngine';
@@ -18,8 +19,8 @@ export function MoveInFlightVisual({ move }: MoveInFlightProps) {
   const endX = isPlayerMove ? 95 : 5;
   const currentX = startX + (endX - startX) * progress;
 
-  // Y position with some sine wave for organic movement
-  const baseY = 30 + Math.random() * 40; // randomize on each move
+  // Y position — stable per move instance, with sine wave for organic movement
+  const baseY = useMemo(() => 30 + Math.random() * 40, [move.id]);
   const yOffset = Math.sin(progress * Math.PI) * 15;
 
   return (

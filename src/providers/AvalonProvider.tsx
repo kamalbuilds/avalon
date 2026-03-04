@@ -1,7 +1,7 @@
 "use client";
 
 // ============================================================================
-// AvalonProvider Wraps Web3Provider + Avalon SDK context
+// AvalonProvider — Wraps Web3Provider + Avalon SDK context
 // All pages get access to Avalon features through this provider.
 // ============================================================================
 
@@ -39,9 +39,6 @@ export function AvalonProvider({ children }: { children: ReactNode }) {
     address: address as Address | undefined,
   });
 
-  const userStore = useUserStore();
-  const gameStore = useGameStore();
-
   // Sync Fuji contract addresses into the viem contract layer
   useEffect(() => {
     setContractAddresses(CONTRACT_ADDRESSES);
@@ -50,27 +47,26 @@ export function AvalonProvider({ children }: { children: ReactNode }) {
   // Sync wallet connection state → userStore
   useEffect(() => {
     if (isConnected && address) {
-      userStore.setAddress(address as Address);
-      userStore.setConnected(true);
-      userStore.setChainId(chainId);
+      useUserStore.getState().setAddress(address as Address);
+      useUserStore.getState().setConnected(true);
+      useUserStore.getState().setChainId(chainId);
     } else {
-      userStore.disconnect();
+      useUserStore.getState().disconnect();
     }
   }, [isConnected, address, chainId]);
 
   // Sync balance
   useEffect(() => {
     if (balanceData) {
-      // Format from bigint → string with decimals
       const formatted = (Number(balanceData.value) / 10 ** balanceData.decimals).toFixed(4);
-      userStore.setBalance(formatted);
+      useUserStore.getState().setBalance(formatted);
     }
   }, [balanceData]);
 
   // Load initial game data (mock for now, will be API later)
   useEffect(() => {
-    if (gameStore.games.length === 0) {
-      gameStore.setGames(MOCK_GAMES);
+    if (useGameStore.getState().games.length === 0) {
+      useGameStore.getState().setGames(MOCK_GAMES);
     }
   }, []);
 

@@ -7,7 +7,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { GlowCard } from "@/components/ui/GlowCard";
 import { Badge } from "@/components/ui/Badge";
-import { Skeleton, SkeletonStatCard, SkeletonCard } from "@/components/ui/Skeleton";
+import { SkeletonStatCard, SkeletonCard } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { WalletModal } from "@/components/ui/WalletModal";
 import { MOCK_GAMES, MOCK_ACTIVITIES } from "@/lib/mockData";
@@ -15,7 +15,6 @@ import { useChronosBattle, useAgentRegistry, useStablecoinEconomy } from "@/hook
 import { useWallet } from "@/hooks/useWallet";
 import {
   Gamepad2,
-  Users,
   DollarSign,
   Layers,
   Activity,
