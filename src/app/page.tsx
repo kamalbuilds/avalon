@@ -345,7 +345,7 @@ export default function Home() {
                   </div>
 
                   <div className="mt-8">
-                    <Link href="/play/chronos">
+                    <Link href="/play/chronos?demo=true">
                       <GlowButton variant="avalanche" size="md">
                         <Gamepad2 className="h-4 w-4" />
                         Play Now
@@ -394,7 +394,7 @@ export default function Home() {
                 Get the SDK
               </GlowButton>
             </Link>
-            <Link href="/play/chronos">
+            <Link href="/play/chronos?demo=true">
               <GlowButton variant="ghost" size="xl">
                 <Gamepad2 className="h-5 w-5" />
                 Try Chronos Battle

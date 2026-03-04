@@ -90,7 +90,7 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.6 }}
         >
-          <Link href="/play/chronos">
+          <Link href="/play/chronos?demo=true">
             <GlowButton variant="avalanche" size="lg" icon={<Gamepad2 className="h-5 w-5" />}>
               Play Chronos Battle
             </GlowButton>

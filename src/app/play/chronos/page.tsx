@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback, useState } from 'react';
+import { Suspense, useEffect, useCallback, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useChronosStore, getNPCForOpponent } from '@/stores/chronosStore';
 import { BattleArena } from '@/components/game/chronos/BattleArena';
@@ -19,8 +19,10 @@ import { WalletGate } from '@/components/WalletGate';
 import { TransactionPending } from '@/components/ui/TransactionPending';
 import { useChronosBattle } from '@/hooks/useContracts';
 import { useWallet } from '@/hooks/useWallet';
+import { useSearchParams } from 'next/navigation';
 import { CHRONOS_NPCS, type ChronosNPCProfile } from '@/ai/npcs/chronos-npcs';
 import { useNPCDialogue, type DialogueMoment } from '@/ai/useNPCDialogue';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { MOVE_LIST, MAX_COINS } from '@/engine/chronos/moves';
 
 // Map ChronosNPCProfile archetype for NPCCard personality prop
@@ -43,7 +45,15 @@ function mapArchetype(arch: string): 'merchant' | 'warrior' | 'guardian' | 'tric
   return map[arch] ?? 'warrior';
 }
 
-export default function ChronosBattlePage() {
+export default function ChronosBattlePageWrapper() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen text-text-muted">Loading...</div>}>
+      <ChronosBattlePage />
+    </Suspense>
+  );
+}
+
+function ChronosBattlePage() {
   const screen = useChronosStore(s => s.screen);
   const game = useChronosStore(s => s.game);
   const selectedOpponent = useChronosStore(s => s.selectedOpponent);
@@ -62,20 +72,36 @@ export default function ChronosBattlePage() {
   const returnToLobby = useChronosStore(s => s.returnToLobby);
   const lootDrop = useChronosStore(s => s.lootDrop);
 
-  // Wallet + on-chain hooks
+  // Demo mode + wallet + on-chain hooks
+  const searchParams = useSearchParams();
+  const isDemo = searchParams.get('demo') === 'true';
   const { isConnected } = useWallet();
   const { createMatch, entryFee: onChainEntryFee, isWritePending, txHash } = useChronosBattle();
   const [txStatus, setTxStatus] = useState<'pending' | 'confirming' | 'success' | 'failed' | null>(null);
 
-  // NPC dialogue hook
+  // NPC dialogue hook + SFX
   const dialogue = useNPCDialogue(npcProfile);
+  const sfx = useSoundEffects();
   const [showMatchResult, setShowMatchResult] = useState(false);
+  const prevEventsLen = useRef(0);
 
-  // Trigger dialogue on game events
+  // Trigger dialogue + SFX on game events
   useEffect(() => {
-    if (!npcProfile || screen !== 'playing') return;
     const lastEvt = game.events[game.events.length - 1];
-    if (!lastEvt) return;
+    if (!lastEvt || game.events.length === prevEventsLen.current) return;
+    prevEventsLen.current = game.events.length;
+
+    // Sound effects for battle events
+    if (screen === 'playing') {
+      if (lastEvt.type === 'move_landed' || lastEvt.type === 'counter_success') {
+        sfx.play('hit');
+      } else if (lastEvt.type === 'shield_block') {
+        sfx.play('block');
+      }
+    }
+
+    // NPC dialogue triggers
+    if (!npcProfile || screen !== 'playing') return;
 
     const momentMap: Record<string, DialogueMoment> = {
       move_landed: lastEvt.target === 'player' ? 'dealt_damage' : 'took_damage',
@@ -103,11 +129,14 @@ export default function ChronosBattlePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen]);
 
-  // Trigger win/lose dialogue on game over
+  // Trigger win/lose dialogue + victory/defeat SFX on game over
   useEffect(() => {
-    if (screen === 'game_over' && npcProfile) {
+    if (screen === 'game_over') {
       const isWin = game.winner === 'player';
-      dialogue.trigger(isWin ? 'lose' : 'win');
+      sfx.play(isWin ? 'victory' : 'defeat');
+      if (npcProfile) {
+        dialogue.trigger(isWin ? 'lose' : 'win');
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen]);
@@ -223,6 +252,11 @@ export default function ChronosBattlePage() {
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-2 border border-border">
               <span className="text-[10px] font-mono text-text-muted">USDT</span>
               <span className="text-sm font-mono font-bold text-neon-yellow">${playerBalance}</span>
+              {isDemo && (
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-warning/20 text-warning border border-warning/30">
+                  DEMO
+                </span>
+              )}
             </div>
 
             {screen !== 'playing' && (

@@ -3,7 +3,8 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useWallet } from "@/hooks/useWallet";
 import { GlowButton } from "@/components/ui/GlowButton";
-import { AlertTriangle, Wallet } from "lucide-react";
+import { AlertTriangle, Wallet, Gamepad2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
 
 interface WalletGateProps {
@@ -13,6 +14,12 @@ interface WalletGateProps {
 
 export function WalletGate({ children, requireNetwork = true }: WalletGateProps) {
   const { isConnected, isCorrectNetwork, switchToFuji } = useWallet();
+  const searchParams = useSearchParams();
+  const isDemo = searchParams.get("demo") === "true";
+
+  if (isDemo) {
+    return <>{children}</>;
+  }
 
   if (!isConnected) {
     return (
@@ -24,7 +31,16 @@ export function WalletGate({ children, requireNetwork = true }: WalletGateProps)
         <p className="text-muted text-center max-w-md mb-8">
           Connect your wallet to access the Avalon dashboard, deploy games, and play on-chain.
         </p>
-        <ConnectButton />
+        <div className="flex flex-col items-center gap-3">
+          <ConnectButton />
+          <a
+            href="?demo=true"
+            className="inline-flex items-center gap-2 text-sm text-muted hover:text-accent transition-colors"
+          >
+            <Gamepad2 className="h-4 w-4" />
+            Try Demo
+          </a>
+        </div>
       </div>
     );
   }
