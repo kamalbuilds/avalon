@@ -10,6 +10,18 @@ Built for the [Avalanche Build Games 2026](https://www.avax.network/buildgames).
 
 ---
 
+## What's New
+
+**Chronos Battle is fully playable.** Pick an opponent, fight, earn loot in a single session with no wallet required.
+
+- **Battle System** 5 move types (Quick Strike, Power Blow, Devastating Strike, Shield, Counter) with hit sounds, floating damage popups, HP flash effects, and victory confetti on win
+- **5 AI NPCs with ERC-8004 Identity** Each opponent has a radar chart showing traits (aggression, patience, adaptability, courage, cunning), contextual mid-battle dialogue driven by personality and game state, and unique play styles
+- **Judge Demo Mode** Visit `/play/chronos?demo=true` to bypass wallet connection and play instantly with a demo wallet. Designed for judges and reviewers
+- **LootReveal Flow** After every win, a Chainlink VRF-powered loot chest opens with rarity-glow animation. Full end-to-end: match victory, stats screen, chest reveal, item drop
+- **Match History + Leaderboard** Track every match result, damage dealt, coins spent, and loot earned. Ranked leaderboard across all players
+
+---
+
 ## The Problem
 
 Game developers want blockchain features real economies, verifiable randomness, AI NPCs with wallets but integration costs 6-12 months of blockchain engineering. Most studios give up or ship half-baked integrations. 90%+ of "blockchain games" are just games with a token stapled on.

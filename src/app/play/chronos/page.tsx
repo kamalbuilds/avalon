@@ -493,9 +493,9 @@ function ChronosBattlePage() {
 
         {/* === PLAYING SCREEN === */}
         {screen === 'playing' && (
-          <div className="flex-1 flex gap-3 p-3 min-h-0">
+          <div className="flex-1 flex flex-col md:flex-row gap-3 p-3 min-h-0 overflow-y-auto md:overflow-hidden">
             {/* Left column */}
-            <div className="w-64 flex flex-col gap-3 shrink-0">
+            <div className="w-full md:w-64 flex flex-col gap-3 md:shrink-0">
               <div className="bg-surface rounded-xl border border-border p-3 space-y-3">
                 <HealthBar
                   current={game.player.hp}
@@ -564,7 +564,7 @@ function ChronosBattlePage() {
             </div>
 
             {/* Right column */}
-            <div className="w-64 flex flex-col gap-3 shrink-0">
+            <div className="w-full md:w-64 flex flex-col gap-3 md:shrink-0">
               <div className="bg-surface rounded-xl border border-border p-3 space-y-3">
                 <HealthBar
                   current={game.ai.hp}
