@@ -35,6 +35,9 @@ contract AvalonGame is Ownable, Pausable, ReentrancyGuard {
     address public vrfConsumer;
     address public economyContract;
 
+    /// @notice Pending refunds for pull-based withdrawal (prevents DoS in cancelGame)
+    mapping(address => uint256) public pendingRefunds;
+
     event PlayerRegistered(address indexed player);
     event GameStarted(uint256 timestamp);
     event RoundStarted(uint256 round, uint256 timestamp);
@@ -43,6 +46,8 @@ contract AvalonGame is Ownable, Pausable, ReentrancyGuard {
     event ScoreUpdated(address indexed player, uint256 newScore);
     event GameCompleted(address indexed winner, uint256 prize);
     event GameCancelled();
+    event RefundAvailable(address indexed player, uint256 amount);
+    event RefundClaimed(address indexed player, uint256 amount);
 
     modifier onlyRegistered() {
         require(players[msg.sender].registered, "AvalonGame: not registered");
@@ -138,15 +143,32 @@ contract AvalonGame is Ownable, Pausable, ReentrancyGuard {
 
         state = GameState.CANCELLED;
 
-        // Refund entry fees
+        // Credit refunds via pull pattern (avoids unbounded loop DoS)
         if (config.entryFee > 0 && !config.stablecoinEnabled) {
+            uint256 fee = config.entryFee;
             for (uint256 i = 0; i < playerList.length; i++) {
-                (bool sent, ) = playerList[i].call{value: config.entryFee}("");
-                require(sent, "AvalonGame: refund failed");
+                pendingRefunds[playerList[i]] += fee;
+                emit RefundAvailable(playerList[i], fee);
             }
         }
 
         emit GameCancelled();
+    }
+
+    /**
+     * @notice Withdraw pending refund (pull pattern).
+     *         Players call this after a game is cancelled to claim their entry fee.
+     */
+    function claimRefund() external nonReentrant {
+        uint256 amount = pendingRefunds[msg.sender];
+        require(amount > 0, "AvalonGame: no refund available");
+
+        pendingRefunds[msg.sender] = 0;
+
+        (bool sent, ) = msg.sender.call{value: amount}("");
+        require(sent, "AvalonGame: refund transfer failed");
+
+        emit RefundClaimed(msg.sender, amount);
     }
 
     function setVRFConsumer(address _vrfConsumer) external onlyOwner {

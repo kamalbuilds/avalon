@@ -189,6 +189,14 @@ export const CHRONOS_OPPONENTS: ChronosOpponent[] = [
 ];
 
 // Loot table for VRF drops
+
+export type LootEffectType =
+  | 'speed_rune'
+  | 'chronos_crown'
+  | 'power_crystal'
+  | 'shield_fragment'
+  | 'none';
+
 export interface LootItem {
   id: string;
   name: string;
@@ -196,6 +204,7 @@ export interface LootItem {
   description: string;
   icon: string;
   value: string; // USDT equivalent
+  effect: LootEffectType;
 }
 
 export const LOOT_TABLE: { rarity: Rarity; weight: number; items: LootItem[] }[] = [
@@ -203,45 +212,45 @@ export const LOOT_TABLE: { rarity: Rarity; weight: number; items: LootItem[] }[]
     rarity: 'common',
     weight: 50,
     items: [
-      { id: 'coin-pouch', name: 'Coin Pouch', rarity: 'common', description: 'A small bag of coins', icon: '\uD83D\uDCB0', value: '0.10' },
-      { id: 'minor-shard', name: 'Minor Chronos Shard', rarity: 'common', description: 'A fragment of time energy', icon: '\uD83D\uDD39', value: '0.05' },
+      { id: 'coin-pouch', name: 'Coin Pouch', rarity: 'common', description: 'A small bag of coins', icon: '\uD83D\uDCB0', value: '0.10', effect: 'none' },
+      { id: 'minor-shard', name: 'Minor Chronos Shard', rarity: 'common', description: 'A fragment of time energy', icon: '\uD83D\uDD39', value: '0.05', effect: 'none' },
     ],
   },
   {
     rarity: 'uncommon',
     weight: 25,
     items: [
-      { id: 'chrono-crystal', name: 'Chrono Crystal', rarity: 'uncommon', description: 'Stores temporal energy', icon: '\uD83D\uDC8E', value: '0.50' },
-      { id: 'speed-rune', name: 'Speed Rune', rarity: 'uncommon', description: 'Reduces move delay by 1 block', icon: '\u26A1', value: '0.75' },
+      { id: 'chrono-crystal', name: 'Chrono Crystal', rarity: 'uncommon', description: 'Stores temporal energy (+5 damage on next attack)', icon: '\uD83D\uDC8E', value: '0.50', effect: 'power_crystal' },
+      { id: 'speed-rune', name: 'Speed Rune', rarity: 'uncommon', description: 'Reduces move delay by 1 block', icon: '\u26A1', value: '0.75', effect: 'speed_rune' },
     ],
   },
   {
     rarity: 'rare',
     weight: 15,
     items: [
-      { id: 'time-blade', name: 'Temporal Blade', rarity: 'rare', description: 'A weapon forged from frozen time', icon: '\uD83D\uDDE1\uFE0F', value: '2.00' },
-      { id: 'shield-of-ages', name: 'Shield of Ages', rarity: 'rare', description: 'Ancient shield that absorbs 2 hits', icon: '\uD83D\uDEE1\uFE0F', value: '2.50' },
+      { id: 'time-blade', name: 'Temporal Blade', rarity: 'rare', description: 'A weapon forged from frozen time (+5 damage on next attack)', icon: '\uD83D\uDDE1\uFE0F', value: '2.00', effect: 'power_crystal' },
+      { id: 'shield-of-ages', name: 'Shield of Ages', rarity: 'rare', description: 'Ancient shield that blocks 50% of next incoming damage', icon: '\uD83D\uDEE1\uFE0F', value: '2.50', effect: 'shield_fragment' },
     ],
   },
   {
     rarity: 'epic',
     weight: 7.5,
     items: [
-      { id: 'chronos-crown', name: 'Chronos Crown', rarity: 'epic', description: 'Grants +2 starting coins', icon: '\uD83D\uDC51', value: '10.00' },
-      { id: 'void-cloak', name: 'Void Cloak', rarity: 'epic', description: 'Makes your next slow move invisible', icon: '\uD83E\uDDE5', value: '12.00' },
+      { id: 'chronos-crown', name: 'Chronos Crown', rarity: 'epic', description: 'Grants +2 starting coins', icon: '\uD83D\uDC51', value: '10.00', effect: 'chronos_crown' },
+      { id: 'void-cloak', name: 'Void Cloak', rarity: 'epic', description: 'Reduces move delay by 1 block', icon: '\uD83E\uDDE5', value: '12.00', effect: 'speed_rune' },
     ],
   },
   {
     rarity: 'legendary',
     weight: 2.5,
     items: [
-      { id: 'infinity-gauntlet', name: 'Infinity Gauntlet', rarity: 'legendary', description: 'One free instant Devastating Attack per match', icon: '\u270A', value: '50.00' },
-      { id: 'time-lords-ring', name: "Time Lord's Ring", rarity: 'legendary', description: 'See opponent moves 1 block earlier', icon: '\uD83D\uDC8D', value: '75.00' },
+      { id: 'infinity-gauntlet', name: 'Infinity Gauntlet', rarity: 'legendary', description: 'One free instant Devastating Attack per match (+5 damage)', icon: '\u270A', value: '50.00', effect: 'power_crystal' },
+      { id: 'time-lords-ring', name: "Time Lord's Ring", rarity: 'legendary', description: 'Grants +2 starting coins and reduces delay by 1 block', icon: '\uD83D\uDC8D', value: '75.00', effect: 'chronos_crown' },
     ],
   },
 ];
 
-// Simulate VRF loot drop
+// Demo/fallback loot drop using Math.random() (used when wallet not connected or ?demo=true)
 export function rollLoot(): LootItem {
   const totalWeight = LOOT_TABLE.reduce((sum, t) => sum + t.weight, 0);
   let roll = Math.random() * totalWeight;
@@ -253,6 +262,28 @@ export function rollLoot(): LootItem {
     }
   }
   return LOOT_TABLE[0].items[0];
+}
+
+// Contract rarity enum: 0=Common, 1=Uncommon, 2=Rare, 3=Epic, 4=Legendary
+const VRF_RARITY_MAP: Record<number, Rarity> = {
+  0: 'common',
+  1: 'uncommon',
+  2: 'rare',
+  3: 'epic',
+  4: 'legendary',
+};
+
+/**
+ * Deterministically resolve a LootItem from a Chainlink VRF random word.
+ * Uses the same rarity the contract computed (passed as contractRarity),
+ * then picks an item within that tier using the randomWord.
+ */
+export function rollLootFromVRF(randomWord: bigint, contractRarity: number): LootItem {
+  const rarity = VRF_RARITY_MAP[contractRarity] ?? 'common';
+  const tier = LOOT_TABLE.find(t => t.rarity === rarity) ?? LOOT_TABLE[0];
+  // Use randomWord to pick an item within the tier deterministically
+  const itemIndex = Number(randomWord % BigInt(tier.items.length));
+  return tier.items[itemIndex];
 }
 
 // Map opponent archetype to AI personality for the engine

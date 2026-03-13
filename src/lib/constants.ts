@@ -97,7 +97,7 @@ export const NPC_DEFAULTS = {
 // ---------------------------------------------------------------------------
 
 export const ECONOMY = {
-  PLATFORM_FEE_BPS: 250, // 2.5%
+  PLATFORM_FEE_BPS: 500, // 5%
   MIN_DEPOSIT: '1.00', // $1 USDT minimum
   MAX_WITHDRAWAL: '10000.00', // $10k max per tx
   DECIMALS: 6, // USDT decimals
@@ -119,10 +119,10 @@ export const VRF_CONFIG = {
 
 export const RARITY_WEIGHTS: Record<Rarity, number> = {
   common: 50,
-  uncommon: 30,
+  uncommon: 25,
   rare: 15,
-  epic: 4,
-  legendary: 1,
+  epic: 7.5,
+  legendary: 2.5,
 };
 
 export const RARITY_COLORS: Record<Rarity, string> = {

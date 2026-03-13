@@ -1,54 +1,41 @@
 # Avalon Demo Script (5 minutes)
 
-> **Audience:** Blockchain VCs, Avalanche core team
-> **Goal:** Show Avalon is a complete, working platform for on-chain gaming
-> **Setup:** Browser at http://localhost:3000. No wallet needed (demo mode).
+> **Audience:** Hackathon judges, Avalanche ecosystem
+> **Goal:** Show Avalon is a working blockchain gaming SDK with a playable demo
+> **Setup:** Browser at localhost:3000 or deployed URL. No wallet needed (demo mode).
 > **Format:** [ACTION] = what to do on screen, [SAY] = voiceover narration
 
 ---
 
 ## 1. Hook + Landing Page (0:00 - 0:30)
 
-[ACTION] Open http://localhost:3000. Hero section is visible.
+[ACTION] Open landing page. Hero section visible.
 
-[SAY] "Unity builds the graphics. Avalon powers the economy. We're the blockchain backend for game developers. You build your game however you want. We give it its own Avalanche L1, autonomous AI agents with real wallets, provably fair loot, and a stablecoin economy."
+[SAY] "Imagine you're a game dev. You've got a great game. You want on-chain economies, fair loot drops, NPCs with real wallets. But wiring up smart contracts takes months. That's the problem we solve."
 
-[ACTION] Scroll slowly through the 4 feature cards:
-- **Own Avalanche L1** - every game gets a dedicated chain
-- **ERC-8004 AI Agents** - NPCs with on-chain identity and wallets
-- **Chainlink VRF Loot** - provably fair, verifiable on-chain
-- **Stablecoin Economy** - real USDT via Tether WDK
+[SAY] "Avalon is the blockchain backend for game developers. You build your game however you want. We give it autonomous NPCs with on-chain identity, provably fair loot via Chainlink VRF, and a stablecoin economy. All through one TypeScript SDK."
 
-[ACTION] Pause on the code example showing `Avalon.init()` and the 3-step flow: Connect, Configure, Deploy.
+[ACTION] Scroll through the 4 feature cards. Pause on the code example showing `Avalon.init()`.
 
-[SAY] "Three lines of code. That's it. Let me show you what this looks like in production."
+[SAY] "A few lines of code. That's the developer experience. Let me show you what this looks like as a player."
 
-[ACTION] Click **"Play Now"** on the Chronos Battle showcase card. Navigates to `/play/chronos?demo=true`.
+[ACTION] Click **"Play Now"** on the Chronos Battle card. Navigate to `/play/chronos?demo=true`.
 
 ---
 
 ## 2. Chronos Battle Lobby (0:30 - 1:15)
 
-[ACTION] Lobby loads with 5 NPC opponent cards displayed as radar-chart NPCCards.
+[ACTION] Lobby loads with 5 NPC opponent cards.
 
-[SAY] "Chronos Battle is our showcase game. The core mechanic: blockchain latency IS the gameplay. Cheap moves land instantly but do low damage. Expensive moves hit hard but take blocks to arrive, so your opponent sees them coming and can react."
+[SAY] "Chronos Battle is our showcase game. The core innovation: blockchain latency IS the gameplay. Cheap moves land instantly but do low damage. Expensive moves hit hard but take blocks to arrive, giving your opponent time to react. Time is money, literally."
 
-[ACTION] Hover over each NPC card briefly:
-- **Aria the Merchant** (medium) - cautious, hoards coins
-- **Kael the Warrior** (easy) - pure aggression
-- **Nova the Trickster** (hard) - counter specialist
-- **Sage the Scholar** (expert) - adapts mid-fight
-- **Iron Guardian** (hard) - defensive wall
+[ACTION] Hover over each NPC card briefly, showing radar charts:
 
-[SAY] "Each opponent is an ERC-8004 AI agent. That's our proposed standard for autonomous NPCs. They have their own on-chain wallet, reputation score, and personality traits that drive their combat decisions. Not scripted. Not random. Personality-driven."
+[SAY] "Five opponents, each with a unique personality. These aren't scripted bots. Each NPC is an ERC-8004 autonomous agent with an on-chain identity, reputation score, and 8 personality traits that drive every combat decision. Aria hoards coins. Kael goes all-in on devastating attacks. Iron Guardian walls up with shields."
 
-[ACTION] **Select Iron Guardian.** Right panel shows:
-- ERC-8004 agent ID and contract address (real Fuji: `0x2636...d7F`)
-- Win/loss record and reputation score
-- Entry fee + prize pool in USDT
-- Catchphrase and playstyle description
+[ACTION] **Select Iron Guardian.** Right panel shows agent ID, contract address, stats.
 
-[SAY] "Iron Guardian is a defensive specialist. 90 patience, 85 courage. Watch how that shapes its decisions in combat."
+[SAY] "Iron Guardian. 98 defense, 15 aggression. Watch how that shapes what it does in combat. That contract address is the real AgentRegistry on Fuji."
 
 [ACTION] Click **START MATCH**.
 
@@ -56,133 +43,127 @@
 
 ## 3. Battle Gameplay (1:15 - 3:00)
 
-[ACTION] Battle arena loads. Player HP/coins on left, AI HP/coins on right, move selector at bottom.
+[ACTION] Battle arena loads. Player HP/coins on left, AI HP/coins on right.
 
 ### Move 1: Quick Strike
-[ACTION] Press **1** or click Quick Strike (1 coin, instant, 10 dmg).
+[ACTION] Press **1** or click Quick Strike.
 
-[SAY] "Quick Strike. One coin, lands instantly. Watch the damage popup and the hit sound."
+[SAY] "Quick Strike. One coin, lands instantly, 10 damage. Watch the hit sound and floating damage number."
 
-> *SFX plays, floating damage number appears*
+> *SFX plays, damage popup appears*
 
 ### Move 2: Power Blow
-[ACTION] Press **2** or click Power Blow (2 coins, 3 blocks delay, 25 dmg).
+[ACTION] Press **2** or click Power Blow.
 
-[SAY] "Power Blow costs 2 coins but takes 3 blocks to land. See it in the moves-in-flight panel on the right. Iron Guardian can see it coming and might throw up a shield."
+[SAY] "Power Blow. 2 coins, takes 3 blocks to land. See it in the moves-in-flight panel? Iron Guardian can see it coming. This is the core tension."
 
-[ACTION] Point to the moves-in-flight panel showing the countdown timer.
+[ACTION] Point to moves-in-flight countdown.
 
-> *NPC dialogue appears: Iron Guardian comments calmly*
+> *NPC dialogue appears*
 
-[SAY] "That dialogue is personality-driven. Iron Guardian's high patience means calm, measured responses. Kael the Warrior would be trash-talking right now."
+[SAY] "That dialogue is personality-driven. Iron Guardian's high patience means calm, measured responses. Kael would be trash-talking right now. The mood system shifts behavior too. Get Iron Guardian's HP low and it switches to afraid mode, using more shields."
 
 ### Move 3: Shield + Counter
-[ACTION] Use Shield (press **4**) when Iron Guardian has a move incoming. Then Counter (press **5**) on the next attack.
+[ACTION] When Iron Guardian has a move incoming, use Shield (press **4**). Then Counter (press **5**) on the next attack.
 
-[SAY] "Shield blocks the next hit. Counter reflects damage at 2x. The AI reads my patterns and adjusts. Watch the confidence percentage in the dialogue bar - that's the AI's internal certainty about its chosen move."
+[SAY] "Shield blocks the next hit completely. Counter is instant and reflects double damage on any move in flight. That's the game theory: do you commit 3 coins to a devastating attack, knowing your opponent might counter for 100 damage?"
 
-### Move 4: Devastating Strike
-[ACTION] Press **3** for Devastating Strike (3 coins, 6 blocks, 50 dmg).
+### Move 4: Devastating Attack
+[ACTION] Press **3** for Devastating Attack.
 
-[SAY] "The big one. 3 coins, 6 blocks to land, 50 damage. High risk, high reward. If Iron Guardian shields, I wasted 3 coins. That economic tension is the whole game."
+[SAY] "The big one. 3 coins, 6 blocks to land, 50 damage. High risk, high reward. All of this is mirrored on-chain. The ChronosBattle contract has the exact same 5 moves, same costs, same delays. Verified on Snowtrace."
 
-[ACTION] Continue until match ends. Point out throughout:
-- NPC dialogue changing with game state (low HP, dominating, etc.)
+[ACTION] Continue playing. Point out:
+- NPC dialogue changing with game state
 - Coin economy (earn 1/block, spend on moves)
-- HP bars with damage flash effects and floating numbers
-- AI confidence display
+- Moves-in-flight panel
 
 ### Game Over + Loot (30s)
-[ACTION] Match ends. Victory confetti rain (if win) or defeat glow (if loss). Stats screen shows.
+[ACTION] Match ends. Victory effects play. Stats screen shows.
 
-[SAY] "Full match stats. Damage dealt, moves used, blocks played, coins spent. And now the loot drop."
+[SAY] "Full match stats: damage dealt, coins spent, blocks played. And now the loot drop."
 
-[ACTION] Loot reveal animation plays. Chest opens with rarity glow.
+[ACTION] Loot reveal animation plays.
 
-[SAY] "This loot drop is powered by Chainlink VRF v2.5. Every roll is verifiable on-chain. Players can check the VRF proof on Snowtrace. Provably fair by default."
+[SAY] "This loot drop comes from our Chainlink VRF v2.5 contract on Fuji. When your wallet is connected, it calls the on-chain VRF consumer for a verifiable random number. In demo mode, you see a client-side fallback. But the contract is live and verified."
+
+[SAY] "And these loot items have real gameplay effects. Speed Rune reduces your move delay by 1 block. Power Crystal adds 5 damage to your next attack. They carry over into your next match."
 
 ---
 
 ## 4. History + Ranks (3:00 - 3:15)
 
-[ACTION] Click **HISTORY** tab in the header.
+[ACTION] Click **HISTORY** tab.
 
 [SAY] "Every match is tracked. Stats, opponent, result, loot earned."
 
 [ACTION] Click **RANKS** tab.
 
-[SAY] "Leaderboard ranks players by performance. In production, this reads directly from the ChronosBattle contract."
+[SAY] "Leaderboard. In production, this reads directly from the ChronosBattle contract events."
 
 ---
 
 ## 5. Dashboard (3:15 - 3:45)
 
-[ACTION] Navigate to http://localhost:3000/dashboard.
+[ACTION] Navigate to `/dashboard`.
 
-[SAY] "Developer dashboard. Everything reads from live Fuji contracts."
+[SAY] "Developer dashboard. These stat cards read from the live Fuji contracts."
 
-[ACTION] Point out the 4 stat cards:
-- **Active L1 Chains** - 2 active, 1 deploying
-- **AI Agents (ERC-8004)** - live count from AgentRegistry
-- **On-Chain Matches** - live count from ChronosBattle
-- **Accepted Tokens** - from StablecoinEconomy
+[ACTION] Point out stat cards: AI Agents from AgentRegistry, On-Chain Matches from ChronosBattle, Accepted Tokens from StablecoinEconomy.
 
-[SAY] "Not mocked. Wrong network? Skeleton loaders. The data comes from 5 smart contracts on Avalanche Fuji."
-
-[ACTION] Scroll to L1 Chains section showing Chronos Battle L1 (Chain ID 100001, 2s blocks) and AI Arena L1.
-
-[SAY] "Every game gets its own L1. Custom block time, custom gas token, sovereign security."
+[SAY] "5 smart contracts deployed and verified on Avalanche Fuji. The architecture is designed so each game can deploy its own contract suite, with a roadmap path to per-game L1 subnets."
 
 ---
 
 ## 6. SDK Docs (3:45 - 4:15)
 
-[ACTION] Navigate to http://localhost:3000/sdk.
+[ACTION] Navigate to `/sdk`.
 
-[SAY] "For developers, everything is accessible through a TypeScript SDK."
+[SAY] "For developers, everything is accessible through one TypeScript SDK."
 
-[ACTION] Scroll through module cards and code examples:
-- `Avalon.init()` - one-line setup
-- `avalon.agents.create()` - spawn an ERC-8004 NPC
-- `avalon.vrf.rollLoot()` - provably fair loot
-- `avalon.economy.payEntryFee()` - stablecoin payments
+[ACTION] Click through the three code example tabs:
+- L1 Deploy
+- AI Agents
+- VRF Loot
 
-[SAY] "TypeScript SDK, Unity plugin, CLI tools. A game developer doesn't need to know Solidity. They configure their game. We handle the blockchain. Any game can integrate this in one npm install."
+[SAY] "Configure your game. Register your NPCs as ERC-8004 agents. Set up VRF loot tables. Set up your stablecoin economy. The SDK wraps all 5 contracts into a clean API."
 
 ---
 
 ## 7. Close (4:15 - 5:00)
 
-[ACTION] Navigate back to http://localhost:3000 (landing page).
+[ACTION] Navigate back to landing page.
 
-[SAY] "Here's what's deployed today."
+[SAY] "Let me recap what's real and deployed today."
 
-| Contract | Fuji Address | Verify |
-|----------|-------------|--------|
-| GameFactory | `0x3f7FC08150709C22F1741A230351B59c36bCCc8a` | [Snowtrace](https://testnet.snowtrace.io/address/0x3f7FC08150709C22F1741A230351B59c36bCCc8a) |
-| ChronosBattle | `0xafA4230B7154d95F1c8Bc13AD443b2e50bde7C57` | [Snowtrace](https://testnet.snowtrace.io/address/0xafA4230B7154d95F1c8Bc13AD443b2e50bde7C57) |
-| AgentRegistry | `0x2636Ed9F3Aa33589810BE07B48ad9Be79de3Fd7F` | [Snowtrace](https://testnet.snowtrace.io/address/0x2636Ed9F3Aa33589810BE07B48ad9Be79de3Fd7F) |
-| StablecoinEconomy | `0x95B4b7d7a23d954BF92FeDF2e00A374E22208D69` | [Snowtrace](https://testnet.snowtrace.io/address/0x95B4b7d7a23d954BF92FeDF2e00A374E22208D69) |
-| LootVRF | `0xc39d9Ec925d3AA6E67FE760630406696408724f8` | [Snowtrace](https://testnet.snowtrace.io/address/0xc39d9Ec925d3AA6E67FE760630406696408724f8) |
+[SAY] "5 verified contracts on Avalanche Fuji. A fully playable game with 5 autonomous NPC opponents. Chainlink VRF integration for provably fair loot. ERC-8004 agent identity, which is a novel use of the standard for gaming NPCs. A stablecoin economy contract. And 39 passing smart contract tests."
 
-[SAY] "Five contracts live on Fuji. ERC-8004 autonomous AI agents. Chainlink VRF provably fair loot. Tether WDK stablecoin economy. Every game deploys on its own Avalanche L1."
-
-[SAY] "We're not pitching a whitepaper. This is working code. You just played it."
+[SAY] "The game you just saw isn't a mockup. The contracts are live. The NPCs have real on-chain identities. The VRF is real. We're not pitching a whitepaper. You just played it."
 
 **END.**
 
 ---
 
+## Deployed Contracts
+
+| Contract | Address | Verify |
+|----------|---------|--------|
+| GameFactory | `0x3f7FC08150709C22F1741A230351B59c36bCCc8a` | [Snowtrace](https://testnet.snowtrace.io/address/0x3f7FC08150709C22F1741A230351B59c36bCCc8a) |
+| ChronosBattle | `0x5BFb2b211d20FC6F811f869184546910FB45985e` | [Snowtrace](https://testnet.snowtrace.io/address/0x5BFb2b211d20FC6F811f869184546910FB45985e) |
+| AgentRegistry | `0x2636Ed9F3Aa33589810BE07B48ad9Be79de3Fd7F` | [Snowtrace](https://testnet.snowtrace.io/address/0x2636Ed9F3Aa33589810BE07B48ad9Be79de3Fd7F) |
+| StablecoinEconomy | `0x95B4b7d7a23d954BF92FeDF2e00A374E22208D69` | [Snowtrace](https://testnet.snowtrace.io/address/0x95B4b7d7a23d954BF92FeDF2e00A374E22208D69) |
+| LootVRF | `0x00aabA40e80d9C64d650C0f99063754944C1F05E` | [Snowtrace](https://testnet.snowtrace.io/address/0x00aabA40e80d9C64d650C0f99063754944C1F05E) |
+
 ## Backup Talking Points (if judges ask)
 
-- **Why Avalanche L1?** Sub-second finality, custom gas, sovereign security. Game-specific chains mean no congestion from DeFi traffic.
-- **Why ERC-8004?** Existing NFT standards don't cover autonomous agents. ERC-8004 gives NPCs wallets, reputation, and decision-making identity on-chain.
+- **Why Avalanche?** Sub-second finality, low gas, growing gaming ecosystem. Architecture ready for per-game L1 subnets.
+- **Why ERC-8004?** Existing NFT standards don't cover autonomous agents. ERC-8004 gives NPCs wallets, reputation, and on-chain identity. Novel use case for gaming.
 - **Why Chainlink VRF?** Players need to trust loot drops are fair. VRF proofs are verifiable on-chain. No server-side RNG.
-- **Why Tether WDK?** Stablecoin economies mean players earn real value, not volatile tokens. USDT is universally understood.
-- **Revenue model?** Platform fee on game L1 deployments + percentage of stablecoin transaction volume.
-- **What's next?** Unity plugin (alpha), game creator dashboard with no-code NPC builder, mainnet deployment.
+- **Revenue model?** Platform fee (5%) on match prize pools + percentage of economy transaction volume.
+- **What's next?** Per-game L1 deployment via Avalanche subnets, npm package publish, Unity plugin, no-code NPC builder.
+- **How is the AI not just if/else?** 8 personality traits weighted into every decision, plus a mood engine that shifts behavior based on battle state. The traits create emergent behavior patterns, not scripted sequences.
 
-## Quick Reference URLs
+## Quick Reference
 
 | Page | URL |
 |------|-----|

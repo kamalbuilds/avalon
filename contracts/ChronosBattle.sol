@@ -6,12 +6,15 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title ChronosBattle
- * @notice Time-based tactical battle game. Moves have different speeds and costs.
- *         FAST = 1 block delay (high cost), MEDIUM = 3 blocks, SLOW = 6 blocks (low cost).
+ * @notice Time-based tactical battle game where blockchain latency IS the mechanic.
+ *         5 moves: Quick Strike (instant, cheap), Power Blow (3-block delay),
+ *         Devastating Attack (6-block delay, expensive), Shield (2-block activation),
+ *         Counter (instant, doubles opponent's in-flight damage).
+ *         Economy uses coins (earned per block) not energy.
  */
 contract ChronosBattle is Ownable, ReentrancyGuard {
-    enum MoveType { FAST, MEDIUM, SLOW }
-    enum MatchState { WAITING, ACTIVE, COMPLETED }
+    enum MoveType { QUICK_STRIKE, POWER_BLOW, DEVASTATING_ATTACK, SHIELD, COUNTER }
+    enum MatchState { WAITING, ACTIVE, COMPLETED, CANCELLED }
 
     struct MoveInFlight {
         MoveType moveType;
@@ -23,8 +26,9 @@ contract ChronosBattle is Ownable, ReentrancyGuard {
 
     struct PlayerState {
         uint256 health;
-        uint256 energy;
+        uint256 coins;
         bool registered;
+        bool shieldActive;
         uint256 movesSubmitted;
     }
 
@@ -35,24 +39,37 @@ contract ChronosBattle is Ownable, ReentrancyGuard {
         address winner;
         uint256 prizePool;
         uint256 startBlock;
+        uint256 createdBlock;
     }
 
-    // Move costs and delays
-    uint256 public constant FAST_COST = 30;
-    uint256 public constant MEDIUM_COST = 20;
-    uint256 public constant SLOW_COST = 10;
+    // Move costs (in coins) - matches frontend moves.ts
+    uint256 public constant QUICK_STRIKE_COST = 1;
+    uint256 public constant POWER_BLOW_COST = 2;
+    uint256 public constant DEVASTATING_ATTACK_COST = 3;
+    uint256 public constant SHIELD_COST = 1;
+    uint256 public constant COUNTER_COST = 2;
 
-    uint256 public constant FAST_DELAY = 1;
-    uint256 public constant MEDIUM_DELAY = 3;
-    uint256 public constant SLOW_DELAY = 6;
+    // Move delays (in blocks) - 0 = instant
+    uint256 public constant QUICK_STRIKE_DELAY = 0;
+    uint256 public constant POWER_BLOW_DELAY = 3;
+    uint256 public constant DEVASTATING_ATTACK_DELAY = 6;
+    uint256 public constant SHIELD_DELAY = 2;
+    uint256 public constant COUNTER_DELAY = 0;
 
-    uint256 public constant FAST_DAMAGE = 15;
-    uint256 public constant MEDIUM_DAMAGE = 25;
-    uint256 public constant SLOW_DAMAGE = 40;
+    // Move damage
+    uint256 public constant QUICK_STRIKE_DAMAGE = 10;
+    uint256 public constant POWER_BLOW_DAMAGE = 25;
+    uint256 public constant DEVASTATING_ATTACK_DAMAGE = 50;
+    uint256 public constant COUNTER_MULTIPLIER = 2;
 
+    // Game constants - matches frontend moves.ts
     uint256 public constant STARTING_HEALTH = 100;
-    uint256 public constant STARTING_ENERGY = 100;
-    uint256 public constant ENERGY_REGEN_PER_BLOCK = 2;
+    uint256 public constant STARTING_COINS = 10;
+    uint256 public constant COINS_PER_BLOCK = 1;
+    uint256 public constant MAX_COINS = 20;
+
+    /// @notice Blocks before a WAITING match can be cancelled (~5 minutes on Avalanche C-Chain)
+    uint256 public constant CANCEL_TIMEOUT_BLOCKS = 100;
 
     // State
     mapping(uint256 => Match) public matches;
@@ -69,7 +86,12 @@ contract ChronosBattle is Ownable, ReentrancyGuard {
     event MatchStarted(uint256 indexed matchId);
     event MoveSubmitted(uint256 indexed matchId, address indexed player, MoveType moveType, uint256 executeBlock);
     event MoveExecuted(uint256 indexed matchId, address indexed player, uint256 damage, uint256 targetHealth);
+    event ShieldActivated(uint256 indexed matchId, address indexed player);
+    event ShieldBroken(uint256 indexed matchId, address indexed player);
+    event CounterSuccess(uint256 indexed matchId, address indexed player, uint256 damage);
+    event CounterMiss(uint256 indexed matchId, address indexed player);
     event MatchCompleted(uint256 indexed matchId, address indexed winner, uint256 prize);
+    event MatchCancelled(uint256 indexed matchId, address indexed player1, uint256 refund);
 
     constructor(uint256 _entryFee, address _treasury) Ownable(msg.sender) {
         entryFee = _entryFee;
@@ -86,13 +108,15 @@ contract ChronosBattle is Ownable, ReentrancyGuard {
             state: MatchState.WAITING,
             winner: address(0),
             prizePool: msg.value,
-            startBlock: 0
+            startBlock: 0,
+            createdBlock: block.number
         });
 
         playerStates[matchId][msg.sender] = PlayerState({
             health: STARTING_HEALTH,
-            energy: STARTING_ENERGY,
+            coins: STARTING_COINS,
             registered: true,
+            shieldActive: false,
             movesSubmitted: 0
         });
 
@@ -113,8 +137,9 @@ contract ChronosBattle is Ownable, ReentrancyGuard {
 
         playerStates[matchId][msg.sender] = PlayerState({
             health: STARTING_HEALTH,
-            energy: STARTING_ENERGY,
+            coins: STARTING_COINS,
             registered: true,
+            shieldActive: false,
             movesSubmitted: 0
         });
 
@@ -136,30 +161,88 @@ contract ChronosBattle is Ownable, ReentrancyGuard {
 
         PlayerState storage ps = playerStates[matchId][msg.sender];
 
-        // Calculate current energy with regen
-        uint256 currentEnergy = _getCurrentEnergy(matchId, msg.sender);
+        // Calculate current coins with per-block income
+        uint256 currentCoins = _getCurrentCoins(matchId, msg.sender);
         uint256 cost = _getMoveCost(moveType);
-        require(currentEnergy >= cost, "ChronosBattle: insufficient energy");
+        require(currentCoins >= cost, "ChronosBattle: insufficient coins");
 
-        // Deduct energy
-        ps.energy = currentEnergy - cost;
+        // Deduct coins
+        ps.coins = currentCoins - cost;
 
-        // Calculate execute block
-        uint256 delay = _getMoveDelay(moveType);
-        uint256 executeBlock = block.number + delay;
-        uint256 damage = _getMoveDamage(moveType);
+        address opponent = msg.sender == m.player1 ? m.player2 : m.player1;
 
-        movesInFlight[matchId][msg.sender].push(MoveInFlight({
-            moveType: moveType,
-            moveData: moveData,
-            executeBlock: executeBlock,
-            executed: false,
-            damage: damage
-        }));
+        if (moveType == MoveType.COUNTER) {
+            // Counter is instant - check if opponent has unexecuted moves in flight
+            MoveInFlight[] storage opponentMoves = movesInFlight[matchId][opponent];
+            uint256 strongestDamage = 0;
+            bool foundTarget = false;
+
+            for (uint256 i = 0; i < opponentMoves.length; i++) {
+                if (!opponentMoves[i].executed && opponentMoves[i].damage > strongestDamage) {
+                    strongestDamage = opponentMoves[i].damage;
+                    foundTarget = true;
+                }
+            }
+
+            if (foundTarget) {
+                uint256 counterDamage = strongestDamage * COUNTER_MULTIPLIER;
+                PlayerState storage opponentState = playerStates[matchId][opponent];
+
+                if (opponentState.shieldActive) {
+                    opponentState.shieldActive = false;
+                    emit ShieldBroken(matchId, opponent);
+                } else {
+                    if (opponentState.health <= counterDamage) {
+                        opponentState.health = 0;
+                    } else {
+                        opponentState.health -= counterDamage;
+                    }
+                    emit CounterSuccess(matchId, msg.sender, counterDamage);
+                    emit MoveExecuted(matchId, msg.sender, counterDamage, opponentState.health);
+                }
+            } else {
+                emit CounterMiss(matchId, msg.sender);
+            }
+        } else if (moveType == MoveType.QUICK_STRIKE) {
+            // Quick Strike is instant damage
+            PlayerState storage opponentState = playerStates[matchId][opponent];
+            uint256 damage = QUICK_STRIKE_DAMAGE;
+
+            if (opponentState.shieldActive) {
+                opponentState.shieldActive = false;
+                emit ShieldBroken(matchId, opponent);
+            } else {
+                if (opponentState.health <= damage) {
+                    opponentState.health = 0;
+                } else {
+                    opponentState.health -= damage;
+                }
+                emit MoveExecuted(matchId, msg.sender, damage, opponentState.health);
+            }
+        } else {
+            // Delayed moves: Power Blow, Devastating Attack, Shield
+            uint256 delay = _getMoveDelay(moveType);
+            uint256 executeBlock = block.number + delay;
+            uint256 damage = _getMoveDamage(moveType);
+
+            movesInFlight[matchId][msg.sender].push(MoveInFlight({
+                moveType: moveType,
+                moveData: moveData,
+                executeBlock: executeBlock,
+                executed: false,
+                damage: damage
+            }));
+
+            emit MoveSubmitted(matchId, msg.sender, moveType, executeBlock);
+        }
 
         ps.movesSubmitted++;
 
-        emit MoveSubmitted(matchId, msg.sender, moveType, executeBlock);
+        // Check win condition after instant moves
+        PlayerState storage opponentCheck = playerStates[matchId][opponent];
+        if (opponentCheck.health == 0) {
+            _endMatch(matchId, msg.sender);
+        }
     }
 
     function executeMove(uint256 matchId, address player, uint256 moveIndex) external {
@@ -172,21 +255,31 @@ contract ChronosBattle is Ownable, ReentrancyGuard {
 
         move.executed = true;
 
-        // Apply damage to opponent
-        address target = player == m.player1 ? m.player2 : m.player1;
-        PlayerState storage targetState = playerStates[matchId][target];
-
-        if (targetState.health <= move.damage) {
-            targetState.health = 0;
+        if (move.moveType == MoveType.SHIELD) {
+            // Shield activates
+            playerStates[matchId][player].shieldActive = true;
+            emit ShieldActivated(matchId, player);
         } else {
-            targetState.health -= move.damage;
-        }
+            // Attack lands on opponent
+            address target = player == m.player1 ? m.player2 : m.player1;
+            PlayerState storage targetState = playerStates[matchId][target];
 
-        emit MoveExecuted(matchId, player, move.damage, targetState.health);
+            if (targetState.shieldActive) {
+                targetState.shieldActive = false;
+                emit ShieldBroken(matchId, target);
+            } else {
+                if (targetState.health <= move.damage) {
+                    targetState.health = 0;
+                } else {
+                    targetState.health -= move.damage;
+                }
+                emit MoveExecuted(matchId, player, move.damage, targetState.health);
+            }
 
-        // Check win condition
-        if (targetState.health == 0) {
-            _endMatch(matchId, player);
+            // Check win condition
+            if (targetState.health == 0) {
+                _endMatch(matchId, player);
+            }
         }
     }
 
@@ -209,35 +302,64 @@ contract ChronosBattle is Ownable, ReentrancyGuard {
         emit MatchCompleted(matchId, winner, prize);
     }
 
+    /**
+     * @notice Cancel a WAITING match and refund the entry fee to player1.
+     *         Only player1 can cancel, and only after CANCEL_TIMEOUT_BLOCKS have passed
+     *         since match creation (prevents griefing / instant cancel).
+     * @param matchId The match to cancel
+     */
+    function cancelMatch(uint256 matchId) external nonReentrant {
+        Match storage m = matches[matchId];
+        require(m.state == MatchState.WAITING, "ChronosBattle: not waiting");
+        require(msg.sender == m.player1, "ChronosBattle: only player1 can cancel");
+        require(
+            block.number >= m.createdBlock + CANCEL_TIMEOUT_BLOCKS,
+            "ChronosBattle: timeout not reached"
+        );
+
+        m.state = MatchState.CANCELLED;
+
+        uint256 refund = m.prizePool;
+        m.prizePool = 0;
+
+        (bool sent, ) = m.player1.call{value: refund}("");
+        require(sent, "ChronosBattle: refund failed");
+
+        emit MatchCancelled(matchId, m.player1, refund);
+    }
+
     // --- Helpers ---
 
     function _getMoveCost(MoveType moveType) internal pure returns (uint256) {
-        if (moveType == MoveType.FAST) return FAST_COST;
-        if (moveType == MoveType.MEDIUM) return MEDIUM_COST;
-        return SLOW_COST;
+        if (moveType == MoveType.QUICK_STRIKE) return QUICK_STRIKE_COST;
+        if (moveType == MoveType.POWER_BLOW) return POWER_BLOW_COST;
+        if (moveType == MoveType.DEVASTATING_ATTACK) return DEVASTATING_ATTACK_COST;
+        if (moveType == MoveType.SHIELD) return SHIELD_COST;
+        return COUNTER_COST;
     }
 
     function _getMoveDelay(MoveType moveType) internal pure returns (uint256) {
-        if (moveType == MoveType.FAST) return FAST_DELAY;
-        if (moveType == MoveType.MEDIUM) return MEDIUM_DELAY;
-        return SLOW_DELAY;
+        if (moveType == MoveType.POWER_BLOW) return POWER_BLOW_DELAY;
+        if (moveType == MoveType.DEVASTATING_ATTACK) return DEVASTATING_ATTACK_DELAY;
+        if (moveType == MoveType.SHIELD) return SHIELD_DELAY;
+        return 0; // QUICK_STRIKE and COUNTER are instant
     }
 
     function _getMoveDamage(MoveType moveType) internal pure returns (uint256) {
-        if (moveType == MoveType.FAST) return FAST_DAMAGE;
-        if (moveType == MoveType.MEDIUM) return MEDIUM_DAMAGE;
-        return SLOW_DAMAGE;
+        if (moveType == MoveType.POWER_BLOW) return POWER_BLOW_DAMAGE;
+        if (moveType == MoveType.DEVASTATING_ATTACK) return DEVASTATING_ATTACK_DAMAGE;
+        return 0; // QUICK_STRIKE handled inline, SHIELD/COUNTER do no direct damage
     }
 
-    function _getCurrentEnergy(uint256 matchId, address player) internal view returns (uint256) {
+    function _getCurrentCoins(uint256 matchId, address player) internal view returns (uint256) {
         Match storage m = matches[matchId];
         PlayerState storage ps = playerStates[matchId][player];
 
         uint256 blocksElapsed = block.number - m.startBlock;
-        uint256 regenEnergy = blocksElapsed * ENERGY_REGEN_PER_BLOCK;
-        uint256 totalEnergy = ps.energy + regenEnergy;
+        uint256 earnedCoins = blocksElapsed * COINS_PER_BLOCK;
+        uint256 totalCoins = ps.coins + earnedCoins;
 
-        return totalEnergy > STARTING_ENERGY ? STARTING_ENERGY : totalEnergy;
+        return totalCoins > MAX_COINS ? MAX_COINS : totalCoins;
     }
 
     // --- Views ---
@@ -254,8 +376,8 @@ contract ChronosBattle is Ownable, ReentrancyGuard {
         return movesInFlight[matchId][player];
     }
 
-    function getCurrentEnergy(uint256 matchId, address player) external view returns (uint256) {
-        return _getCurrentEnergy(matchId, player);
+    function getCurrentCoins(uint256 matchId, address player) external view returns (uint256) {
+        return _getCurrentCoins(matchId, player);
     }
 
     // --- Admin ---

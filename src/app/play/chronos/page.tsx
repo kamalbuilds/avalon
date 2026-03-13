@@ -19,6 +19,7 @@ import { WalletGate } from '@/components/WalletGate';
 import { TransactionPending } from '@/components/ui/TransactionPending';
 import { useChronosBattle } from '@/hooks/useContracts';
 import { useWallet } from '@/hooks/useWallet';
+import { useVRFLoot } from '@/hooks/useVRFLoot';
 import { useSearchParams } from 'next/navigation';
 import { CHRONOS_NPCS, type ChronosNPCProfile } from '@/ai/npcs/chronos-npcs';
 import { useNPCDialogue, type DialogueMoment } from '@/ai/useNPCDialogue';
@@ -69,6 +70,7 @@ function ChronosBattlePage() {
   const aiThinking = useChronosStore(s => s.aiThinking);
   const matchHistory = useChronosStore(s => s.matchHistory);
   const revealLoot = useChronosStore(s => s.revealLoot);
+  const setVRFLoot = useChronosStore(s => s.setVRFLoot);
   const returnToLobby = useChronosStore(s => s.returnToLobby);
   const lootDrop = useChronosStore(s => s.lootDrop);
 
@@ -78,6 +80,9 @@ function ChronosBattlePage() {
   const { isConnected } = useWallet();
   const { createMatch, entryFee: onChainEntryFee, isWritePending, txHash } = useChronosBattle();
   const [txStatus, setTxStatus] = useState<'pending' | 'confirming' | 'success' | 'failed' | null>(null);
+
+  // VRF Loot hook - real Chainlink VRF with demo fallback
+  const vrfLoot = useVRFLoot();
 
   // NPC dialogue hook + SFX
   const dialogue = useNPCDialogue(npcProfile);
@@ -174,8 +179,33 @@ function ChronosBattlePage() {
   }, [handleKeyDown]);
 
   useEffect(() => {
-    return () => cleanup();
-  }, [cleanup]);
+    return () => { cleanup(); vrfLoot.reset(); };
+  }, [cleanup, vrfLoot.reset]);
+
+  // When VRF loot result arrives, push it into the store
+  useEffect(() => {
+    if (vrfLoot.result) {
+      setVRFLoot(
+        vrfLoot.result.item,
+        vrfLoot.result.vrfRequestId,
+        vrfLoot.result.vrfProofHash,
+        vrfLoot.result.vrfTxHash,
+        vrfLoot.result.isDemoMode,
+      );
+    }
+  }, [vrfLoot.result, setVRFLoot]);
+
+  // Handle loot reveal: uses real VRF when wallet connected, demo fallback otherwise
+  const handleRevealLoot = useCallback(() => {
+    if (isDemo || !isConnected) {
+      // Demo mode: use the old Math.random() path
+      revealLoot();
+    } else {
+      // Real VRF: request on-chain randomness
+      vrfLoot.requestLoot(false);
+      // The store will be updated via the useEffect above once the VRF result arrives
+    }
+  }, [isDemo, isConnected, revealLoot, vrfLoot]);
 
   const canAffordEntry = selectedOpponent ? parseFloat(playerBalance) >= parseFloat(selectedOpponent.entryFee) : false;
 
@@ -665,7 +695,7 @@ function ChronosBattlePage() {
         )}
 
         {/* === OVERLAYS === */}
-        <GameOverScreen />
+        <GameOverScreen onRevealLoot={handleRevealLoot} />
         <LootReveal />
 
         {/* MatchResult overlay shown after game_over when user clicks "View Stats" */}
@@ -674,7 +704,7 @@ function ChronosBattlePage() {
             stats={matchResultStats}
             onPlayAgain={() => { setShowMatchResult(false); returnToLobby(); startMatch(); }}
             onMenu={() => { setShowMatchResult(false); returnToLobby(); }}
-            onViewLoot={latestMatch?.result === 'win' ? () => { setShowMatchResult(false); revealLoot(); } : undefined}
+            onViewLoot={latestMatch?.result === 'win' ? () => { setShowMatchResult(false); handleRevealLoot(); } : undefined}
           />
         )}
       </div>

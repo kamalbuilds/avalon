@@ -13,6 +13,7 @@ import {
   MAX_COINS,
   COUNTER_MULTIPLIER,
 } from './moves';
+import type { LootEffectType } from './opponents';
 
 export type PlayerId = 'player' | 'ai';
 
@@ -26,12 +27,19 @@ export interface MoveInFlight {
   timestamp: number;
 }
 
+export interface ActiveLootEffects {
+  speedRune: boolean;       // reduce move delay by 1 block
+  powerCrystal: boolean;    // +5 damage on next attack (consumed on use)
+  shieldFragment: boolean;  // block 50% of next incoming damage (consumed on use)
+}
+
 export interface BattlerState {
   hp: number;
   maxHp: number;
   coins: number;
   shieldActive: boolean;
   shieldBlocksRemaining: number;
+  lootEffects: ActiveLootEffects;
 }
 
 export interface MatchStats {
@@ -81,16 +89,37 @@ function nextMoveId(): string {
   return `move_${++moveCounter}`;
 }
 
-export function createInitialState(): ChronosGameState {
+function createEmptyLootEffects(): ActiveLootEffects {
+  return { speedRune: false, powerCrystal: false, shieldFragment: false };
+}
+
+/** Build active loot effects from an array of effect keys the player has collected */
+export function buildLootEffects(effects: LootEffectType[]): ActiveLootEffects {
+  const active = createEmptyLootEffects();
+  for (const e of effects) {
+    if (e === 'speed_rune') active.speedRune = true;
+    if (e === 'power_crystal') active.powerCrystal = true;
+    if (e === 'shield_fragment') active.shieldFragment = true;
+    // chronos_crown is handled at match start (adds coins) not here
+  }
+  return active;
+}
+
+export function createInitialState(playerLootEffects?: LootEffectType[]): ChronosGameState {
+  const playerEffects = playerLootEffects ? buildLootEffects(playerLootEffects) : createEmptyLootEffects();
+  // Chronos Crown: grant +2 starting coins
+  const bonusCoins = playerLootEffects?.includes('chronos_crown') ? 2 : 0;
+
   return {
     phase: 'waiting',
     currentBlock: 0,
     player: {
       hp: STARTING_HP,
       maxHp: STARTING_HP,
-      coins: STARTING_COINS,
+      coins: Math.min(MAX_COINS, STARTING_COINS + bonusCoins),
       shieldActive: false,
       shieldBlocksRemaining: 0,
+      lootEffects: playerEffects,
     },
     ai: {
       hp: STARTING_HP,
@@ -98,6 +127,7 @@ export function createInitialState(): ChronosGameState {
       coins: STARTING_COINS,
       shieldActive: false,
       shieldBlocksRemaining: 0,
+      lootEffects: createEmptyLootEffects(),
     },
     movesInFlight: [],
     events: [],
@@ -233,9 +263,15 @@ export function launchMove(
   } else if (move.delay === 0) {
     // Instant attack (quick_strike)
     const targetBattler = newState[target];
+    // Power Crystal: +5 damage on attack (consumed after use)
+    let effectiveDamage = move.damage;
+    if (battler.lootEffects.powerCrystal && !move.isDefensive) {
+      effectiveDamage += 5;
+      battler.lootEffects.powerCrystal = false;
+    }
     if (targetBattler.shieldActive) {
       targetBattler.shieldActive = false;
-      stats.damageBlocked += move.damage;
+      stats.damageBlocked += effectiveDamage;
       newEvents.push({
         id: nextEventId(),
         type: 'move_blocked',
@@ -247,29 +283,46 @@ export function launchMove(
         block: newState.currentBlock,
       });
     } else {
-      targetBattler.hp = Math.max(0, targetBattler.hp - move.damage);
-      stats.damageDealt += move.damage;
+      // Shield Fragment: block 50% of incoming damage (consumed)
+      let finalDamage = effectiveDamage;
+      if (targetBattler.lootEffects.shieldFragment) {
+        finalDamage = Math.ceil(effectiveDamage * 0.5);
+        targetBattler.lootEffects.shieldFragment = false;
+      }
+      targetBattler.hp = Math.max(0, targetBattler.hp - finalDamage);
+      stats.damageDealt += finalDamage;
       newEvents.push({
         id: nextEventId(),
         type: 'move_landed',
         owner,
         target,
         moveType,
-        damage: move.damage,
-        message: `${owner === 'player' ? 'You' : 'AI'} landed a ${move.name} for ${move.damage} damage!`,
+        damage: finalDamage,
+        message: `${owner === 'player' ? 'You' : 'AI'} landed a ${move.name} for ${finalDamage} damage!`,
         timestamp: Date.now(),
         block: newState.currentBlock,
       });
     }
   } else {
     // Delayed move add to flight
+    // Power Crystal: +5 damage on attack (consumed)
+    let effectiveDamage = move.damage;
+    if (battler.lootEffects.powerCrystal && !move.isDefensive) {
+      effectiveDamage += 5;
+      battler.lootEffects.powerCrystal = false;
+    }
+    // Speed Rune: reduce delay by 1 block (min 1)
+    let effectiveDelay = move.delay;
+    if (battler.lootEffects.speedRune) {
+      effectiveDelay = Math.max(1, move.delay - 1);
+    }
     newState.movesInFlight.push({
       id: nextMoveId(),
       owner,
       type: moveType,
-      blocksRemaining: move.delay,
-      totalBlocks: move.delay,
-      damage: move.damage,
+      blocksRemaining: effectiveDelay,
+      totalBlocks: effectiveDelay,
+      damage: effectiveDamage,
       timestamp: Date.now(),
     });
     newEvents.push({
@@ -357,16 +410,22 @@ export function processBlock(state: ChronosGameState): { state: ChronosGameState
             block: newState.currentBlock,
           });
         } else {
-          targetBattler.hp = Math.max(0, targetBattler.hp - mif.damage);
-          ownerStats.damageDealt += mif.damage;
+          // Shield Fragment: block 50% of incoming damage (consumed)
+          let finalDamage = mif.damage;
+          if (targetBattler.lootEffects.shieldFragment) {
+            finalDamage = Math.ceil(mif.damage * 0.5);
+            targetBattler.lootEffects.shieldFragment = false;
+          }
+          targetBattler.hp = Math.max(0, targetBattler.hp - finalDamage);
+          ownerStats.damageDealt += finalDamage;
           newEvents.push({
             id: nextEventId(),
             type: 'move_landed',
             owner: mif.owner,
             target,
             moveType: mif.type,
-            damage: mif.damage,
-            message: `${mif.owner === 'player' ? 'Your' : 'AI\'s'} ${MOVES[mif.type].name} landed for ${mif.damage} damage!`,
+            damage: finalDamage,
+            message: `${mif.owner === 'player' ? 'Your' : 'AI\'s'} ${MOVES[mif.type].name} landed for ${finalDamage} damage!`,
             timestamp: Date.now(),
             block: newState.currentBlock,
           });

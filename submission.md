@@ -71,10 +71,10 @@ Play Chronos Battle instantly at `/play/chronos?demo=true` — the `?demo=true` 
 | Contract | Address | Verify |
 |----------|---------|--------|
 | GameFactory | `0x3f7FC08150709C22F1741A230351B59c36bCCc8a` | [Snowtrace](https://testnet.snowtrace.io/address/0x3f7FC08150709C22F1741A230351B59c36bCCc8a) |
-| ChronosBattle | `0xafA4230B7154d95F1c8Bc13AD443b2e50bde7C57` | [Snowtrace](https://testnet.snowtrace.io/address/0xafA4230B7154d95F1c8Bc13AD443b2e50bde7C57) |
+| ChronosBattle | `0x5BFb2b211d20FC6F811f869184546910FB45985e` | [Snowtrace](https://testnet.snowtrace.io/address/0x5BFb2b211d20FC6F811f869184546910FB45985e) |
 | AgentRegistry (ERC-8004) | `0x2636Ed9F3Aa33589810BE07B48ad9Be79de3Fd7F` | [Snowtrace](https://testnet.snowtrace.io/address/0x2636Ed9F3Aa33589810BE07B48ad9Be79de3Fd7F) |
 | StablecoinEconomy | `0x95B4b7d7a23d954BF92FeDF2e00A374E22208D69` | [Snowtrace](https://testnet.snowtrace.io/address/0x95B4b7d7a23d954BF92FeDF2e00A374E22208D69) |
-| LootVRF (Chainlink VRF v2.5) | `0xc39d9Ec925d3AA6E67FE760630406696408724f8` | [Snowtrace](https://testnet.snowtrace.io/address/0xc39d9Ec925d3AA6E67FE760630406696408724f8) |
+| LootVRF (Chainlink VRF v2.5) | `0x00aabA40e80d9C64d650C0f99063754944C1F05E` | [Snowtrace](https://testnet.snowtrace.io/address/0x00aabA40e80d9C64d650C0f99063754944C1F05E) |
 
 **Describe your tech stack, architecture decisions, and implementation approach:**
 Frontend: Next.js 16 (App Router) with TypeScript, Tailwind CSS 4, Zustand state management, and Framer Motion animations. Mobile-responsive battle layout. Web3: wagmi v2 + viem for blockchain interactions, RainbowKit for wallet connection, plus a ?demo=true bypass mode that uses a pre-configured demo wallet so judges and players can try the full game without a wallet. Smart Contracts: Solidity 0.8.24 on Hardhat with OpenZeppelin and Chainlink contract libraries — 6 contracts (~1,111 LOC), all deployed and verified on Avalanche Fuji. Game Engine: Custom TypeScript engine with ECS-inspired architecture (EntitySystem, MoveSystem, CombatSystem, EconomySystem, StateManager). AI System: Behavior tree architecture with personality-driven agents, dialogue system, economic decision-making, and ERC-8004 identity integration. Audio: Web Audio API synthesized sound effects (no .mp3 files) — hit sounds, power-up tones, victory jingle.
@@ -144,7 +144,7 @@ Must Have (all shipped):
 - [x] Mobile-responsive battle layout
 
 Should Have (shipped):
-- [x] Chainlink VRF v2.5 integration with verifiable loot drops (contract: `0xc39d9...724f8`)
+- [x] Chainlink VRF v2.5 integration with verifiable loot drops (contract: `0x00aab...1F05E`)
 - [x] AI NPC personality system — 5 archetypes, 8 traits, mood system affecting combat decisions and dialogue tone
 - [x] AI NPC dialogue system — contextual responses triggered by game events (low HP, dominating, opponent move incoming)
 - [x] Real-time coin economy (earn 1 coin/block, spend on moves with delay/damage tradeoffs)

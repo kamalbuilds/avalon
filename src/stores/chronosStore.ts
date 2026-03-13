@@ -20,12 +20,14 @@ import { type AIPersonality, getAIDecision, getAIReactionTime } from '@/engine/c
 import {
   type ChronosOpponent,
   type LootItem,
+  type LootEffectType,
   CHRONOS_OPPONENTS,
   rollLoot,
   opponentToPersonality,
+  rollLootFromVRF,
 } from '@/engine/chronos/opponents';
 import { type ChronosNPCProfile, CHRONOS_NPCS, getChronosNPC } from '@/ai/npcs/chronos-npcs';
-import { type AIThinkingState, getChronosBridgeDecision, getNPCReactionTime } from '@/ai/ChronosBridge';
+import { type AIThinkingState, getChronosBridgeDecision, getNPCReactionTime, resetNpcMood } from '@/ai/ChronosBridge';
 
 // --- Types ---
 
@@ -119,6 +121,10 @@ interface ChronosStore {
   // Loot
   lootDrop: LootItem | null;
   vrfRequestId: string | null;
+  vrfProofHash: string | null;
+  vrfTxHash: string | null;
+  vrfIsDemoMode: boolean;
+  playerInventory: LootItem[];
 
   // Match history
   matchHistory: MatchRecord[];
@@ -143,6 +149,7 @@ interface ChronosStore {
   triggerScreenShake: (intensity: number) => void;
   triggerHitFlash: (target: PlayerId) => void;
   revealLoot: () => void;
+  setVRFLoot: (item: LootItem, vrfRequestId: string | null, vrfProofHash: string | null, vrfTxHash: string | null, isDemoMode: boolean) => void;
   returnToLobby: () => void;
   cleanup: () => void;
 }
@@ -163,6 +170,10 @@ export const useChronosStore = create<ChronosStore>((set, get) => ({
   aiThinking: null,
   lootDrop: null,
   vrfRequestId: null,
+  vrfProofHash: null,
+  vrfTxHash: null,
+  vrfIsDemoMode: true,
+  playerInventory: [],
   matchHistory: [],
   screenShake: null,
   hitFlash: null,
@@ -183,7 +194,7 @@ export const useChronosStore = create<ChronosStore>((set, get) => ({
   },
 
   startMatch: () => {
-    const { cleanup, selectedOpponent, playerBalance } = get();
+    const { cleanup, selectedOpponent, playerBalance, playerInventory } = get();
     if (!selectedOpponent) return;
 
     cleanup();
@@ -193,11 +204,20 @@ export const useChronosStore = create<ChronosStore>((set, get) => ({
     const fee = parseFloat(selectedOpponent.entryFee);
     if (balance < fee) return;
 
-    const newState = createInitialState();
+    // Collect active loot effects from player inventory
+    const activeEffects: LootEffectType[] = playerInventory
+      .map(item => item.effect)
+      .filter((e): e is LootEffectType => e !== 'none');
+
+    const newState = createInitialState(activeEffects);
     newState.phase = 'playing';
     newState.startTime = Date.now();
 
     const personality = opponentToPersonality(selectedOpponent);
+
+    // Reset NPC mood for fresh match
+    const npcId = OPPONENT_TO_NPC_ID[selectedOpponent.id];
+    if (npcId) resetNpcMood(npcId);
 
     set({
       game: newState,
@@ -209,6 +229,9 @@ export const useChronosStore = create<ChronosStore>((set, get) => ({
       lastEvents: [],
       lootDrop: null,
       vrfRequestId: null,
+      vrfProofHash: null,
+      vrfTxHash: null,
+      vrfIsDemoMode: true,
       playerBalance: (balance - fee).toFixed(2),
     });
 
@@ -436,6 +459,7 @@ export const useChronosStore = create<ChronosStore>((set, get) => ({
   },
 
   revealLoot: () => {
+    // Demo fallback: uses Math.random() when setVRFLoot hasn't been called
     const loot = rollLoot();
     const vrfId = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
 
@@ -447,7 +471,35 @@ export const useChronosStore = create<ChronosStore>((set, get) => ({
       set({ matchHistory: updated });
     }
 
-    set({ lootDrop: loot, vrfRequestId: vrfId, screen: 'loot_reveal' });
+    // Add loot to player inventory (keep last 20 items)
+    const { playerInventory } = get();
+    const updatedInventory = [...playerInventory, loot].slice(-20);
+
+    set({ lootDrop: loot, vrfRequestId: vrfId, vrfProofHash: null, vrfTxHash: null, vrfIsDemoMode: true, screen: 'loot_reveal', playerInventory: updatedInventory });
+  },
+
+  setVRFLoot: (item, vrfRequestId, vrfProofHash, vrfTxHash, isDemoMode) => {
+    // Update latest match record with loot
+    const { matchHistory } = get();
+    if (matchHistory.length > 0) {
+      const updated = [...matchHistory];
+      updated[0] = { ...updated[0], lootDrop: item };
+      set({ matchHistory: updated });
+    }
+
+    // Add loot to player inventory (keep last 20 items)
+    const { playerInventory } = get();
+    const updatedInventory = [...playerInventory, item].slice(-20);
+
+    set({
+      lootDrop: item,
+      vrfRequestId,
+      vrfProofHash,
+      vrfTxHash,
+      vrfIsDemoMode: isDemoMode,
+      screen: 'loot_reveal',
+      playerInventory: updatedInventory,
+    });
   },
 
   returnToLobby: () => {
@@ -460,6 +512,9 @@ export const useChronosStore = create<ChronosStore>((set, get) => ({
       lastEvents: [],
       lootDrop: null,
       vrfRequestId: null,
+      vrfProofHash: null,
+      vrfTxHash: null,
+      vrfIsDemoMode: true,
       selectedOpponent: null,
       npcProfile: null,
       aiThinking: null,

@@ -54,6 +54,75 @@ export const ChronosBattleABI = [
       {
         "indexed": true,
         "internalType": "address",
+        "name": "player",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "damage",
+        "type": "uint256"
+      }
+    ],
+    "name": "CounterSuccess",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "matchId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "player",
+        "type": "address"
+      }
+    ],
+    "name": "CounterMiss",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "matchId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "player1",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "refund",
+        "type": "uint256"
+      }
+    ],
+    "name": "MatchCancelled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "matchId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "winner",
         "type": "address"
       },
@@ -200,8 +269,46 @@ export const ChronosBattleABI = [
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "matchId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "player",
+        "type": "address"
+      }
+    ],
+    "name": "ShieldActivated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "matchId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "player",
+        "type": "address"
+      }
+    ],
+    "name": "ShieldBroken",
+    "type": "event"
+  },
+  {
     "inputs": [],
-    "name": "ENERGY_REGEN_PER_BLOCK",
+    "name": "CANCEL_TIMEOUT_BLOCKS",
     "outputs": [
       {
         "internalType": "uint256",
@@ -214,7 +321,7 @@ export const ChronosBattleABI = [
   },
   {
     "inputs": [],
-    "name": "FAST_COST",
+    "name": "COINS_PER_BLOCK",
     "outputs": [
       {
         "internalType": "uint256",
@@ -227,7 +334,7 @@ export const ChronosBattleABI = [
   },
   {
     "inputs": [],
-    "name": "FAST_DAMAGE",
+    "name": "COUNTER_COST",
     "outputs": [
       {
         "internalType": "uint256",
@@ -240,7 +347,7 @@ export const ChronosBattleABI = [
   },
   {
     "inputs": [],
-    "name": "FAST_DELAY",
+    "name": "COUNTER_MULTIPLIER",
     "outputs": [
       {
         "internalType": "uint256",
@@ -253,7 +360,7 @@ export const ChronosBattleABI = [
   },
   {
     "inputs": [],
-    "name": "MEDIUM_COST",
+    "name": "DEVASTATING_ATTACK_COST",
     "outputs": [
       {
         "internalType": "uint256",
@@ -266,7 +373,7 @@ export const ChronosBattleABI = [
   },
   {
     "inputs": [],
-    "name": "MEDIUM_DAMAGE",
+    "name": "DEVASTATING_ATTACK_DAMAGE",
     "outputs": [
       {
         "internalType": "uint256",
@@ -279,7 +386,7 @@ export const ChronosBattleABI = [
   },
   {
     "inputs": [],
-    "name": "MEDIUM_DELAY",
+    "name": "DEVASTATING_ATTACK_DELAY",
     "outputs": [
       {
         "internalType": "uint256",
@@ -292,7 +399,7 @@ export const ChronosBattleABI = [
   },
   {
     "inputs": [],
-    "name": "SLOW_COST",
+    "name": "MAX_COINS",
     "outputs": [
       {
         "internalType": "uint256",
@@ -305,7 +412,7 @@ export const ChronosBattleABI = [
   },
   {
     "inputs": [],
-    "name": "SLOW_DAMAGE",
+    "name": "POWER_BLOW_COST",
     "outputs": [
       {
         "internalType": "uint256",
@@ -318,7 +425,7 @@ export const ChronosBattleABI = [
   },
   {
     "inputs": [],
-    "name": "SLOW_DELAY",
+    "name": "POWER_BLOW_DAMAGE",
     "outputs": [
       {
         "internalType": "uint256",
@@ -331,7 +438,85 @@ export const ChronosBattleABI = [
   },
   {
     "inputs": [],
-    "name": "STARTING_ENERGY",
+    "name": "POWER_BLOW_DELAY",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "QUICK_STRIKE_COST",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "QUICK_STRIKE_DAMAGE",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "QUICK_STRIKE_DELAY",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "SHIELD_COST",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "SHIELD_DELAY",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "STARTING_COINS",
     "outputs": [
       {
         "internalType": "uint256",
@@ -353,6 +538,19 @@ export const ChronosBattleABI = [
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "matchId",
+        "type": "uint256"
+      }
+    ],
+    "name": "cancelMatch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -417,7 +615,7 @@ export const ChronosBattleABI = [
         "type": "address"
       }
     ],
-    "name": "getCurrentEnergy",
+    "name": "getCurrentCoins",
     "outputs": [
       {
         "internalType": "uint256",
@@ -468,6 +666,11 @@ export const ChronosBattleABI = [
           {
             "internalType": "uint256",
             "name": "startBlock",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "createdBlock",
             "type": "uint256"
           }
         ],
@@ -554,12 +757,17 @@ export const ChronosBattleABI = [
           },
           {
             "internalType": "uint256",
-            "name": "energy",
+            "name": "coins",
             "type": "uint256"
           },
           {
             "internalType": "bool",
             "name": "registered",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "shieldActive",
             "type": "bool"
           },
           {
@@ -640,6 +848,11 @@ export const ChronosBattleABI = [
       {
         "internalType": "uint256",
         "name": "startBlock",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "createdBlock",
         "type": "uint256"
       }
     ],
@@ -743,12 +956,17 @@ export const ChronosBattleABI = [
       },
       {
         "internalType": "uint256",
-        "name": "energy",
+        "name": "coins",
         "type": "uint256"
       },
       {
         "internalType": "bool",
         "name": "registered",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "shieldActive",
         "type": "bool"
       },
       {

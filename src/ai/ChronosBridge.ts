@@ -8,6 +8,7 @@ import type { ChronosGameState, PlayerId } from '@/engine/chronos/ChronosEngine'
 import { canAffordMove } from '@/engine/chronos/ChronosEngine';
 import { type ChronosMoveType, MOVES, MOVE_LIST } from '@/engine/chronos/moves';
 import type { ChronosNPCProfile } from './npcs/chronos-npcs';
+import { type Mood, type MoodState, ARCHETYPES } from './PersonalitySystem';
 
 // --- Thinking Visualization ---
 
@@ -36,6 +37,150 @@ interface MoveScore {
   score: number;
   factors: ThinkingFactor[];
   reason: string;
+}
+
+// --- Battle Mood Engine ---
+// Tracks NPC mood across battle ticks and modifies decisions accordingly
+
+const npcMoodStates = new Map<string, MoodState>();
+
+function getOrCreateMood(npc: ChronosNPCProfile): MoodState {
+  const existing = npcMoodStates.get(npc.id);
+  if (existing) return existing;
+  const archDef = ARCHETYPES[npc.archetype];
+  const initial: MoodState = {
+    current: archDef?.defaultMood ?? 'calm',
+    intensity: 50,
+    duration: Infinity,
+    previous: archDef?.defaultMood ?? 'calm',
+  };
+  npcMoodStates.set(npc.id, initial);
+  return initial;
+}
+
+function setNpcMood(npcId: string, mood: Mood, intensity: number, duration: number): void {
+  const state = npcMoodStates.get(npcId);
+  if (!state) return;
+  state.previous = state.current;
+  state.current = mood;
+  state.intensity = Math.max(0, Math.min(100, intensity));
+  state.duration = duration;
+}
+
+/** Update mood based on battle events visible in game state */
+function updateBattleMood(state: ChronosGameState, npc: ChronosNPCProfile): MoodState {
+  const mood = getOrCreateMood(npc);
+  const hpPercent = state.ai.hp / state.ai.maxHp;
+  const playerHpPercent = state.player.hp / state.player.maxHp;
+
+  // Tick down duration
+  if (mood.duration !== Infinity) {
+    mood.duration--;
+    if (mood.duration <= 0) {
+      const archDef = ARCHETYPES[npc.archetype];
+      mood.previous = mood.current;
+      mood.current = archDef?.defaultMood ?? 'calm';
+      mood.intensity = 50;
+      mood.duration = Infinity;
+    }
+  }
+
+  // React to HP thresholds
+  if (hpPercent < 0.25 && mood.current !== 'angry' && mood.current !== 'afraid') {
+    if (npc.traits.courage > 60) {
+      setNpcMood(npc.id, 'angry', 80, 8);
+    } else {
+      setNpcMood(npc.id, 'afraid', 70, 6);
+    }
+  }
+
+  // Dominating: feel excited or happy
+  if (playerHpPercent < 0.3 && hpPercent > 0.6 && mood.current !== 'excited') {
+    if (npc.traits.sociability > 50) {
+      setNpcMood(npc.id, 'excited', 70, 5);
+    } else {
+      setNpcMood(npc.id, 'happy', 60, 5);
+    }
+  }
+
+  // Stalemate detection: bored if long match with little damage
+  if (state.currentBlock > 15 && hpPercent > 0.7 && playerHpPercent > 0.7) {
+    if (npc.traits.patience < 40 && mood.current !== 'bored') {
+      setNpcMood(npc.id, 'bored', 50, 4);
+    }
+  }
+
+  return mood;
+}
+
+/** Reset mood when a new match starts */
+export function resetNpcMood(npcId: string): void {
+  npcMoodStates.delete(npcId);
+}
+
+/** Apply mood-based score modifiers to a move */
+function applyMoodModifiers(
+  moveType: ChronosMoveType,
+  move: (typeof MOVES)[ChronosMoveType],
+  mood: MoodState,
+  factors: ThinkingFactor[]
+): number {
+  let mod = 0;
+  const intensity = mood.intensity / 100; // 0-1
+
+  switch (mood.current) {
+    case 'angry':
+      // Angry NPCs prefer attacks, hate defense
+      if (!move.isDefensive && moveType !== 'counter') {
+        mod += 12 * intensity;
+        factors.push({ factor: 'mood:angry', influence: 'positive', weight: mod, detail: 'Anger fuels aggression' });
+      }
+      if (moveType === 'shield') {
+        mod -= 10 * intensity;
+        factors.push({ factor: 'mood:angry', influence: 'negative', weight: 10 * intensity, detail: 'Too angry to defend' });
+      }
+      break;
+    case 'afraid':
+      // Afraid NPCs want shields
+      if (moveType === 'shield') {
+        mod += 15 * intensity;
+        factors.push({ factor: 'mood:afraid', influence: 'positive', weight: mod, detail: 'Fear drives defensive play' });
+      }
+      if (!move.isDefensive && move.cost >= 3) {
+        mod -= 8 * intensity;
+      }
+      break;
+    case 'excited':
+      // Excited: more random, favor big moves
+      if (move.cost >= 2) {
+        mod += 8 * intensity;
+        factors.push({ factor: 'mood:excited', influence: 'positive', weight: mod, detail: 'Excitement amplifies bold plays' });
+      }
+      break;
+    case 'bored':
+      // Bored: avoid cheap moves, try something different
+      if (moveType === 'quick_strike') {
+        mod -= 10 * intensity;
+        factors.push({ factor: 'mood:bored', influence: 'negative', weight: 10 * intensity, detail: 'Bored of basic moves' });
+      }
+      if (move.cost >= 3) {
+        mod += 6 * intensity;
+      }
+      break;
+    case 'suspicious':
+      // Suspicious: favor counters
+      if (moveType === 'counter') {
+        mod += 10 * intensity;
+        factors.push({ factor: 'mood:suspicious', influence: 'positive', weight: mod, detail: 'Suspicion leads to countering' });
+      }
+      break;
+    case 'happy':
+      // Happy: slight confidence boost, no strong bias
+      mod += 3 * intensity;
+      break;
+  }
+
+  return mod;
 }
 
 // --- Bridge ---
@@ -68,6 +213,9 @@ export function getChronosBridgeDecision(
   const hpPercent = ai.hp / ai.maxHp;
   const playerHpPercent = player.hp / player.maxHp;
   const coinAdvantage = ai.coins - player.coins;
+
+  // Update and read battle mood (affects scoring below)
+  const mood = updateBattleMood(state, npc);
 
   // Score each affordable move
   const scores: MoveScore[] = affordable.map(moveType => {
@@ -134,6 +282,66 @@ export function getChronosBridgeDecision(
       }
     }
 
+    // --- Sociability: social NPCs engage more (favor counters for interaction) ---
+    if (moveType === 'counter') {
+      const socialBonus = (traits.sociability / 100) * 12;
+      score += socialBonus;
+      if (socialBonus > 6) {
+        factors.push({ factor: 'sociability', influence: 'positive', weight: socialBonus, detail: `Social personality (${traits.sociability}) engages with counters` });
+      }
+    }
+    // Antisocial NPCs avoid reactive plays, prefer solo strikes
+    if (traits.sociability < 35 && !move.isDefensive && moveType !== 'counter') {
+      const loneWolfBonus = ((100 - traits.sociability) / 100) * 8;
+      score += loneWolfBonus;
+      if (loneWolfBonus > 4) {
+        factors.push({ factor: 'sociability', influence: 'positive', weight: loneWolfBonus, detail: 'Lone wolf prefers direct attacks' });
+      }
+    }
+
+    // --- Curiosity: curious NPCs try different moves more often ---
+    // Penalize repeating the same move type the AI just used
+    if (traits.curiosity > 50) {
+      const lastAiMoves = state.events
+        .filter(e => e.type === 'move_launched' && e.owner === 'ai')
+        .slice(-3);
+      const recentSameType = lastAiMoves.filter(e => e.moveType === moveType).length;
+      if (recentSameType >= 2) {
+        const curiosityPenalty = (traits.curiosity / 100) * 15;
+        score -= curiosityPenalty;
+        factors.push({ factor: 'curiosity', influence: 'negative', weight: curiosityPenalty, detail: `Curious mind (${traits.curiosity}) avoids repeating ${move.name}` });
+      }
+    }
+    // Bonus for moves NOT recently used (curiosity drives variety)
+    if (traits.curiosity > 60) {
+      const recentMoveTypes = state.events
+        .filter(e => e.type === 'move_launched' && e.owner === 'ai')
+        .slice(-5)
+        .map(e => e.moveType);
+      if (!recentMoveTypes.includes(moveType)) {
+        const varietyBonus = (traits.curiosity / 100) * 10;
+        score += varietyBonus;
+        if (varietyBonus > 5) {
+          factors.push({ factor: 'curiosity', influence: 'positive', weight: varietyBonus, detail: `Curious wants to try ${move.name}` });
+        }
+      }
+    }
+
+    // --- Loyalty: loyal NPCs stick to their preferred strategy ---
+    if (traits.loyalty > 60 && npc.preferredMoves.includes(moveType)) {
+      const loyaltyBonus = (traits.loyalty / 100) * 12;
+      score += loyaltyBonus;
+      if (loyaltyBonus > 7) {
+        factors.push({ factor: 'loyalty', influence: 'positive', weight: loyaltyBonus, detail: `Loyal to strategy (${traits.loyalty}) sticks with ${move.name}` });
+      }
+    }
+    // Low loyalty: fickle NPCs switch strategies often
+    if (traits.loyalty < 30 && npc.preferredMoves.includes(moveType)) {
+      const ficklePenalty = ((100 - traits.loyalty) / 100) * 8;
+      score -= ficklePenalty;
+      factors.push({ factor: 'loyalty', influence: 'negative', weight: ficklePenalty, detail: 'Fickle personality deviates from preferred moves' });
+    }
+
     // --- Situational scoring ---
 
     // Low HP emergency
@@ -184,6 +392,10 @@ export function getChronosBridgeDecision(
       score += 8;
       factors.push({ factor: 'economy-lead', influence: 'positive', weight: 8, detail: `Coin advantage (+${coinAdvantage}) press the attack` });
     }
+
+    // --- Mood modifiers from battle mood engine ---
+    const moodMod = applyMoodModifiers(moveType, move, mood, factors);
+    score += moodMod;
 
     return {
       move: moveType,

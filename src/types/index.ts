@@ -596,16 +596,18 @@ export interface NPCProfile {
 export interface OnChainMatchData {
   player1: Address;
   player2: Address;
-  state: number; // 0=Waiting, 1=Active, 2=Completed
+  state: number; // 0=Waiting, 1=Active, 2=Completed, 3=Cancelled
   winner: Address;
   prizePool: bigint;
   startBlock: bigint;
+  createdBlock: bigint;
 }
 
 export interface OnChainPlayerState {
   health: bigint;
-  energy: bigint;
+  coins: bigint;
   registered: boolean;
+  shieldActive: boolean;
   movesSubmitted: bigint;
 }
 

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ExternalLink } from 'lucide-react';
 import { useChronosStore } from '@/stores/chronosStore';
 
 const RARITY_COLORS: Record<string, { color: string; glow: string; bg: string }> = {
@@ -17,12 +18,15 @@ const FALLBACK_LOOT = {
   rarity: 'common' as const,
   icon: '\uD83D\uDD29',
   description: 'A fragment of discarded armor. Worth something to the right trader.',
-  value: 0.10,
+  value: '0.10',
 };
 
 export function LootReveal() {
   const storeLootDrop = useChronosStore(s => s.lootDrop);
   const vrfRequestId = useChronosStore(s => s.vrfRequestId);
+  const vrfProofHash = useChronosStore(s => s.vrfProofHash);
+  const vrfTxHash = useChronosStore(s => s.vrfTxHash);
+  const vrfIsDemoMode = useChronosStore(s => s.vrfIsDemoMode);
   const returnToLobby = useChronosStore(s => s.returnToLobby);
   const startMatch = useChronosStore(s => s.startMatch);
   const screen = useChronosStore(s => s.screen);
@@ -36,6 +40,11 @@ export function LootReveal() {
   const rarity = RARITY_COLORS[lootDrop.rarity] || RARITY_COLORS.common;
   const isLegendary = lootDrop.rarity === 'legendary';
   const isEpic = lootDrop.rarity === 'epic';
+
+  // Snowtrace (Fuji testnet) explorer URL for the VRF transaction
+  const explorerUrl = vrfTxHash
+    ? `https://testnet.snowtrace.io/tx/${vrfTxHash}`
+    : null;
 
   return (
     <motion.div
@@ -140,18 +149,71 @@ export function LootReveal() {
           )}
         </AnimatePresence>
 
-        {/* VRF proof */}
-        {isOpened && vrfRequestId && (
+        {/* VRF proof section */}
+        {isOpened && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="text-center space-y-1"
+            className="w-full max-w-xs space-y-2"
           >
-            <p className="text-[9px] font-mono text-text-muted">Chainlink VRF Proof</p>
-            <p className="text-[8px] font-mono text-neon-cyan break-all max-w-xs">
-              {vrfRequestId}
-            </p>
+            {/* On-chain VRF badge */}
+            {!vrfIsDemoMode && vrfProofHash ? (
+              <div className="rounded-lg bg-surface border border-neon-green/20 p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse" />
+                  <span className="text-[10px] font-mono font-bold text-neon-green uppercase tracking-wider">
+                    Chainlink VRF Verified
+                  </span>
+                </div>
+
+                {/* Request ID */}
+                <div className="space-y-0.5">
+                  <p className="text-[8px] font-mono text-text-muted">VRF Request ID</p>
+                  <p className="text-[7px] font-mono text-neon-cyan break-all">
+                    {vrfRequestId}
+                  </p>
+                </div>
+
+                {/* Random Word (the actual VRF proof) */}
+                <div className="space-y-0.5">
+                  <p className="text-[8px] font-mono text-text-muted">VRF Random Word</p>
+                  <p className="text-[7px] font-mono text-neon-magenta break-all">
+                    {vrfProofHash}
+                  </p>
+                </div>
+
+                {/* Snowtrace link */}
+                {explorerUrl && (
+                  <a
+                    href={explorerUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-[9px] font-mono text-neon-cyan hover:text-neon-cyan/80 transition-colors"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                    View on Snowtrace
+                  </a>
+                )}
+              </div>
+            ) : (
+              <div className="rounded-lg bg-surface border border-border p-3 space-y-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-neon-yellow" />
+                  <span className="text-[10px] font-mono font-bold text-neon-yellow uppercase tracking-wider">
+                    Demo Mode
+                  </span>
+                </div>
+                <p className="text-[8px] font-mono text-text-muted">
+                  Connect wallet on Fuji testnet for on-chain VRF loot drops
+                </p>
+                {vrfRequestId && (
+                  <p className="text-[7px] font-mono text-text-muted break-all">
+                    Simulated ID: {vrfRequestId}
+                  </p>
+                )}
+              </div>
+            )}
           </motion.div>
         )}
 

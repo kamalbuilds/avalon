@@ -64,6 +64,15 @@ export function useChronosBattle() {
     });
   };
 
+  const cancelMatch = (matchId: bigint) => {
+    writeContract({
+      address: CONTRACT_ADDRESSES.chronosBattle,
+      abi: ChronosBattleABI,
+      functionName: "cancelMatch",
+      args: [matchId],
+    });
+  };
+
   return {
     matchCount: matchCount as bigint | undefined,
     entryFee: entryFee as bigint | undefined,
@@ -71,6 +80,7 @@ export function useChronosBattle() {
     joinMatch,
     submitMove,
     executeMove,
+    cancelMatch,
     isWritePending,
     txHash,
   };
@@ -183,15 +193,40 @@ export function usePrizePool(gameId: bigint | undefined, token: Address | undefi
 // ============================================================================
 
 export function useLootVRF() {
+  const { writeContractAsync, isPending: isRequestPending, data: txHash } = useWriteContract();
+
   const { data: totalDrops } = useReadContract({
     address: CONTRACT_ADDRESSES.lootVRF,
     abi: LootVRFABI,
     functionName: "totalDrops",
   });
 
+  const requestRandomLoot = async (gameId: bigint, player: Address) => {
+    return writeContractAsync({
+      address: CONTRACT_ADDRESSES.lootVRF,
+      abi: LootVRFABI,
+      functionName: "requestRandomLoot",
+      args: [gameId, player],
+    });
+  };
+
   return {
     totalDrops: totalDrops as bigint | undefined,
+    requestRandomLoot,
+    isRequestPending,
+    txHash,
   };
+}
+
+/** Read a specific loot drop by requestId */
+export function useLootDrop(requestId: bigint | undefined) {
+  return useReadContract({
+    address: CONTRACT_ADDRESSES.lootVRF,
+    abi: LootVRFABI,
+    functionName: "getLootDrop",
+    args: requestId !== undefined ? [requestId] : undefined,
+    query: { enabled: requestId !== undefined },
+  });
 }
 
 /** Read loot drops for a specific player */

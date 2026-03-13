@@ -100,13 +100,14 @@ function DefeatParticles({ count = 35 }: { count?: number }) {
   );
 }
 
-export function GameOverScreen() {
+export function GameOverScreen({ onRevealLoot }: { onRevealLoot?: () => void } = {}) {
   const game = useChronosStore(s => s.game);
   const screen = useChronosStore(s => s.screen);
   const selectedOpponent = useChronosStore(s => s.selectedOpponent);
   const startMatch = useChronosStore(s => s.startMatch);
   const returnToLobby = useChronosStore(s => s.returnToLobby);
-  const revealLoot = useChronosStore(s => s.revealLoot);
+  const storeRevealLoot = useChronosStore(s => s.revealLoot);
+  const revealLoot = onRevealLoot ?? storeRevealLoot;
 
   if (screen !== 'game_over' || game.phase !== 'game_over') return null;
 

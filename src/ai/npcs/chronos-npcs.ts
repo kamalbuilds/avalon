@@ -21,7 +21,7 @@ export interface ChronosNPCProfile {
   profileImage: string;
   description: string;
   playstyle: string;
-  difficulty: 'easy' | 'medium' | 'hard' | 'expert';
+  difficulty: 'easy' | 'medium' | 'hard' | 'expert' | 'legendary';
   preferredMoves: string[];
   catchphrase: string;
   winRate: number;
@@ -53,7 +53,7 @@ export const ARIA_THE_MERCHANT: ChronosNPCProfile = {
   profileImage: '/npc/aria-merchant.png',
   description: 'A shrewd trader who fights like she haggles cautiously, always calculating the cost. Every move is an investment.',
   playstyle: 'Cautious and economical. Hoards coins, uses cheap moves, waits for the perfect expensive strike.',
-  difficulty: 'medium',
+  difficulty: 'easy',
   preferredMoves: ['quick_strike', 'shield', 'counter'],
   catchphrase: 'Everything has a price. Your defeat? Surprisingly affordable.',
   winRate: 0.55,
@@ -83,7 +83,7 @@ export const KAEL_THE_WARRIOR: ChronosNPCProfile = {
   profileImage: '/npc/kael-warrior.png',
   description: 'Born to fight. Kael burns through coins fast, launching devastating attacks without hesitation.',
   playstyle: 'Aggressive and expensive. Prefers Power Blow and Devastating Attack. Rarely shields.',
-  difficulty: 'hard',
+  difficulty: 'medium',
   preferredMoves: ['power_blow', 'devastating_attack', 'quick_strike'],
   catchphrase: 'Shields are for cowards. Let your fists speak.',
   winRate: 0.62,
@@ -113,7 +113,7 @@ export const NOVA_THE_TRICKSTER: ChronosNPCProfile = {
   profileImage: '/npc/nova-trickster.png',
   description: 'Unpredictable and counter-heavy. Nova reads your moves and punishes every mistake with wicked timing.',
   playstyle: 'Counter-heavy and unpredictable. Mixes cheap strikes with well-timed counters. Impossible to read.',
-  difficulty: 'expert',
+  difficulty: 'hard',
   preferredMoves: ['counter', 'quick_strike', 'power_blow'],
   catchphrase: 'Predictable players make the best punching bags.',
   winRate: 0.68,
@@ -173,7 +173,7 @@ export const IRON_GUARDIAN: ChronosNPCProfile = {
   profileImage: '/npc/iron-guardian.png',
   description: 'An immovable wall. Iron Guardian shields constantly and counter-punches when you overextend.',
   playstyle: 'Shield-focused and defensive. Wears you down with patience, then finishes with precise strikes.',
-  difficulty: 'hard',
+  difficulty: 'legendary',
   preferredMoves: ['shield', 'counter', 'power_blow'],
   catchphrase: 'You may strike me. You will not break me.',
   winRate: 0.58,
