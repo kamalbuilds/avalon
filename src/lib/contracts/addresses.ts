@@ -7,7 +7,7 @@ export const CONTRACT_ADDRESSES = {
   chronosBattle: "0xafA4230B7154d95F1c8Bc13AD443b2e50bde7C57" as Address,
   agentRegistry: "0x2636Ed9F3Aa33589810BE07B48ad9Be79de3Fd7F" as Address,
   stablecoinEconomy: "0x95B4b7d7a23d954BF92FeDF2e00A374E22208D69" as Address,
-  lootVRF: "0xc39d9Ec925d3AA6E67FE760630406696408724f8" as Address,
+  lootVRF: "0x00aabA40e80d9C64d650C0f99063754944C1F05E" as Address,
   usdt: (process.env.NEXT_PUBLIC_USDT_ADDRESS || "0x0000000000000000000000000000000000000000") as Address,
 } as const;
 
