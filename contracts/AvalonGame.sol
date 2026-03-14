@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
+/// @title AvalonGame — the implementation contract cloned by GameFactory (EIP-1167)
+/// @notice Do NOT call the constructor after factory deployment — call initialize() instead.
 contract AvalonGame is Ownable, Pausable, ReentrancyGuard {
     enum GameState { WAITING, ACTIVE, COMPLETED, CANCELLED }
 
@@ -59,11 +61,20 @@ contract AvalonGame is Ownable, Pausable, ReentrancyGuard {
         _;
     }
 
-    constructor(
+    bool private _initialized;
+
+    constructor() Ownable(msg.sender) {}
+
+    /// @notice Initialize this clone — called once by GameFactory immediately after cloning.
+    ///         Replaces the constructor for EIP-1167 proxy instances.
+    function initialize(
         string memory _name,
         GameConfig memory _config,
         address _owner
-    ) Ownable(_owner) {
+    ) external {
+        require(!_initialized, "AvalonGame: already initialized");
+        _initialized = true;
+        _transferOwnership(_owner);
         gameName = _name;
         config = _config;
         state = GameState.WAITING;

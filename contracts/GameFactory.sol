@@ -3,8 +3,16 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/proxy/Clones.sol";
+import "./AvalonGame.sol";
 
+/// @title GameFactory — deploys AvalonGame instances via EIP-1167 minimal proxies
+/// @notice Each call to createGame deploys a cheap clone of the AvalonGame implementation.
+///         On Avalanche L1 this means every game has its own sovereign contract with a
+///         unique address, configured entry fee, and VRF/stablecoin flags.
 contract GameFactory is Ownable, ReentrancyGuard {
+    using Clones for address;
+
     struct GameConfig {
         uint256 maxPlayers;
         uint256 entryFee;
@@ -22,6 +30,9 @@ contract GameFactory is Ownable, ReentrancyGuard {
         bool active;
     }
 
+    /// @notice The AvalonGame implementation contract all clones point to
+    address public immutable gameImplementation;
+
     mapping(uint256 => GameInfo) public games;
     mapping(address => uint256[]) public creatorGames;
     uint256 public gameCount;
@@ -30,21 +41,30 @@ contract GameFactory is Ownable, ReentrancyGuard {
     event GameUpdated(uint256 indexed gameId, string name, GameConfig config);
     event GameRemoved(uint256 indexed gameId);
 
-    constructor() Ownable(msg.sender) {}
+    constructor(address _gameImplementation) Ownable(msg.sender) {
+        require(_gameImplementation != address(0), "GameFactory: zero implementation");
+        gameImplementation = _gameImplementation;
+    }
 
+    /// @notice Deploy a new AvalonGame clone and register it.
+    ///         The clone is an EIP-1167 minimal proxy — gas cost ~200k vs ~1.5M for a full deploy.
     function createGame(
         string calldata name,
         GameConfig calldata config
-    ) external nonReentrant returns (uint256 gameId) {
+    ) external nonReentrant returns (uint256 gameId, address gameAddress) {
         require(bytes(name).length > 0, "GameFactory: empty name");
         require(config.maxPlayers >= 2, "GameFactory: need >= 2 players");
 
+        // Deploy EIP-1167 minimal proxy pointing to gameImplementation
+        gameAddress = gameImplementation.clone();
+
+        // Initialize the clone (proxies have no constructor)
+        AvalonGame(payable(gameAddress)).initialize(name, _toAvalonConfig(config), msg.sender);
+
         gameId = gameCount++;
 
-        // Deploy a minimal proxy or record the game
-        // In production, this would deploy an AvalonGame clone
         games[gameId] = GameInfo({
-            gameAddress: address(0), // Set after deployment
+            gameAddress: gameAddress,
             name: name,
             creator: msg.sender,
             config: config,
@@ -54,13 +74,18 @@ contract GameFactory is Ownable, ReentrancyGuard {
 
         creatorGames[msg.sender].push(gameId);
 
-        emit GameCreated(gameId, address(0), name, msg.sender);
-        return gameId;
+        emit GameCreated(gameId, gameAddress, name, msg.sender);
     }
 
-    function setGameAddress(uint256 gameId, address gameAddress) external onlyOwner {
-        require(gameId < gameCount, "GameFactory: invalid game");
-        games[gameId].gameAddress = gameAddress;
+    /// @dev Convert factory GameConfig to AvalonGame.GameConfig
+    function _toAvalonConfig(GameConfig calldata c) internal pure returns (AvalonGame.GameConfig memory) {
+        return AvalonGame.GameConfig({
+            maxPlayers: c.maxPlayers,
+            entryFee: c.entryFee,
+            roundDuration: c.roundDuration,
+            vrfEnabled: c.vrfEnabled,
+            stablecoinEnabled: c.stablecoinEnabled
+        });
     }
 
     function updateGame(
