@@ -148,6 +148,7 @@ interface ChronosStore {
   scheduleAIMove: () => void;
   triggerScreenShake: (intensity: number) => void;
   triggerHitFlash: (target: PlayerId) => void;
+  togglePause: () => void;
   revealLoot: () => void;
   setVRFLoot: (item: LootItem, vrfRequestId: string | null, vrfProofHash: string | null, vrfTxHash: string | null, isDemoMode: boolean) => void;
   returnToLobby: () => void;
@@ -456,6 +457,12 @@ export const useChronosStore = create<ChronosStore>((set, get) => ({
   triggerHitFlash: (target: PlayerId) => {
     set({ hitFlash: target });
     setTimeout(() => set({ hitFlash: null }), 200);
+  },
+
+  togglePause: () => {
+    const { game } = get();
+    if (game.phase !== 'playing') return;
+    set((s) => ({ isPaused: !s.isPaused }));
   },
 
   revealLoot: () => {

@@ -73,6 +73,8 @@ function ChronosBattlePage() {
   const setVRFLoot = useChronosStore(s => s.setVRFLoot);
   const returnToLobby = useChronosStore(s => s.returnToLobby);
   const lootDrop = useChronosStore(s => s.lootDrop);
+  const isPaused = useChronosStore(s => s.isPaused);
+  const togglePause = useChronosStore(s => s.togglePause);
 
   // Demo mode + wallet + on-chain hooks
   const searchParams = useSearchParams();
@@ -165,13 +167,17 @@ function ChronosBattlePage() {
   // Keyboard shortcuts: 1-5 for moves
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (game.phase === 'playing') {
+      if (e.key === 'p' || e.key === 'P') {
+        togglePause();
+        return;
+      }
       const num = parseInt(e.key);
       if (num >= 1 && num <= 5) {
         const moveType = MOVE_LIST[num - 1];
         if (moveType) playerMove(moveType);
       }
     }
-  }, [game.phase, playerMove]);
+  }, [game.phase, playerMove, togglePause]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -314,9 +320,26 @@ function ChronosBattlePage() {
             )}
 
             {screen === 'playing' && (
-              <span className="text-[10px] font-mono px-2 py-1 rounded bg-neon-green/10 text-neon-green border border-neon-green/20">
-                LIVE
-              </span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={togglePause}
+                  className={`text-[10px] font-mono px-2 py-1 rounded border transition-colors ${
+                    isPaused
+                      ? 'bg-neon-yellow/10 text-neon-yellow border-neon-yellow/20 hover:bg-neon-yellow/20'
+                      : 'bg-surface-2 text-text-muted border-border hover:text-text-secondary'
+                  }`}
+                  title="Toggle pause (P)"
+                >
+                  {isPaused ? '\u25B6 RESUME' : '\u23F8 PAUSE'}
+                </button>
+                <span className={`text-[10px] font-mono px-2 py-1 rounded border ${
+                  isPaused
+                    ? 'bg-neon-yellow/10 text-neon-yellow border-neon-yellow/20'
+                    : 'bg-neon-green/10 text-neon-green border-neon-green/20'
+                }`}>
+                  {isPaused ? 'PAUSED' : 'LIVE'}
+                </span>
+              </div>
             )}
           </div>
         </header>
