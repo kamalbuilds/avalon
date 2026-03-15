@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:contracts": "TS_NODE_PROJECT=tsconfig.hardhat.json hardhat test"
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^2.2.10",
