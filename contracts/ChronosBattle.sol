@@ -71,6 +71,9 @@ contract ChronosBattle is Ownable, ReentrancyGuard {
     /// @notice Blocks before a WAITING match can be cancelled (~5 minutes on Avalanche C-Chain)
     uint256 public constant CANCEL_TIMEOUT_BLOCKS = 100;
 
+    /// @notice Blocks before an ACTIVE match can be claimed as victory by timeout (~30 minutes on C-Chain)
+    uint256 public constant ACTIVE_TIMEOUT_BLOCKS = 600;
+
     // State
     mapping(uint256 => Match) public matches;
     mapping(uint256 => mapping(address => PlayerState)) public playerStates;
@@ -92,6 +95,7 @@ contract ChronosBattle is Ownable, ReentrancyGuard {
     event CounterMiss(uint256 indexed matchId, address indexed player);
     event MatchCompleted(uint256 indexed matchId, address indexed winner, uint256 prize);
     event MatchCancelled(uint256 indexed matchId, address indexed player1, uint256 refund);
+    event VictoryClaimedByTimeout(uint256 indexed matchId, address indexed winner, uint256 prize);
 
     constructor(uint256 _entryFee, address _treasury) Ownable(msg.sender) {
         entryFee = _entryFee;
@@ -326,6 +330,43 @@ contract ChronosBattle is Ownable, ReentrancyGuard {
         require(sent, "ChronosBattle: refund failed");
 
         emit MatchCancelled(matchId, m.player1, refund);
+    }
+
+    /**
+     * @notice Claim victory if an ACTIVE match has stalled for ACTIVE_TIMEOUT_BLOCKS.
+     *         Either player can call this. The caller is awarded the prize minus platform fee.
+     *         Prevents funds being permanently locked if opponent goes AFK mid-game.
+     * @param matchId The stalled match
+     */
+    function claimVictoryByTimeout(uint256 matchId) external nonReentrant {
+        Match storage m = matches[matchId];
+        require(m.state == MatchState.ACTIVE, "ChronosBattle: not active");
+        require(
+            msg.sender == m.player1 || msg.sender == m.player2,
+            "ChronosBattle: not a player"
+        );
+        require(
+            block.number >= m.createdBlock + ACTIVE_TIMEOUT_BLOCKS,
+            "ChronosBattle: timeout not reached"
+        );
+
+        m.state = MatchState.COMPLETED;
+
+        uint256 total = m.prizePool;
+        m.prizePool = 0;
+
+        uint256 fee = (total * platformFeeBps) / 10000;
+        uint256 prize = total - fee;
+
+        if (fee > 0) {
+            (bool feeSent, ) = treasury.call{value: fee}("");
+            require(feeSent, "ChronosBattle: fee transfer failed");
+        }
+
+        (bool prizeSent, ) = msg.sender.call{value: prize}("");
+        require(prizeSent, "ChronosBattle: prize transfer failed");
+
+        emit VictoryClaimedByTimeout(matchId, msg.sender, prize);
     }
 
     // --- Helpers ---

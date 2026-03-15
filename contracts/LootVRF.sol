@@ -72,7 +72,7 @@ contract LootVRF is VRFConsumerBaseV2Plus {
     }
 
     modifier onlyAuthorizedGame() {
-        require(authorizedGames[msg.sender] || msg.sender == address(s_vrfCoordinator), "LootVRF: not authorized");
+        require(authorizedGames[msg.sender], "LootVRF: not authorized");
         _;
     }
 

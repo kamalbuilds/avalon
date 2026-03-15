@@ -76,6 +76,17 @@ contract StablecoinEconomy is Ownable, ReentrancyGuard {
     function removeToken(address token) external onlyOwner {
         require(acceptedTokens[token], "StablecoinEconomy: not accepted");
         acceptedTokens[token] = false;
+
+        // Remove from tokenList array to prevent stale data in getAcceptedTokens()
+        uint256 len = tokenList.length;
+        for (uint256 i = 0; i < len; i++) {
+            if (tokenList[i] == token) {
+                tokenList[i] = tokenList[len - 1];
+                tokenList.pop();
+                break;
+            }
+        }
+
         emit TokenRemoved(token);
     }
 
