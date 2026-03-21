@@ -135,7 +135,7 @@ export function useVRFLoot() {
             });
 
             // dropData is a tuple: [gameId, player, rarity, lootId, fulfilled, randomWord]
-            const drop = dropData as readonly [bigint, string, number, bigint, boolean, bigint];
+            const drop = dropData as unknown as readonly [bigint, string, number, bigint, boolean, bigint];
             const fulfilled = drop[4];
 
             if (fulfilled) {
