@@ -65,7 +65,7 @@ const modules = [
     description: "Deploy your game on its own Avalanche L1 with custom parameters block time, gas token, validator set.",
     color: "text-avalanche",
     bgColor: "bg-avalanche/10",
-    methods: ["avalon.l1.deploy()", "avalon.l1.configure()", "avalon.l1.status()"],
+    methods: ["avalon.l1.deploy()", "avalon.l1.status()"],
   },
   {
     icon: Bot,
@@ -73,7 +73,7 @@ const modules = [
     description: "Create autonomous NPCs with on-chain identity, wallets, and behavior trees. They perceive, think, and act.",
     color: "text-neon-cyan",
     bgColor: "bg-neon-cyan/10",
-    methods: ["avalon.agents.create()", "avalon.agents.setPersonality()", "avalon.agents.getWallet()"],
+    methods: ["avalon.agents.create()", "avalon.agents.get()", "avalon.agents.totalAgents()", "avalon.agents.updateReputation()"],
   },
   {
     icon: Shield,
@@ -81,7 +81,7 @@ const modules = [
     description: "Provably fair loot drops, random encounters, and reward distribution powered by Chainlink VRF v2.5.",
     color: "text-neon-purple",
     bgColor: "bg-neon-purple/10",
-    methods: ["avalon.vrf.rollLoot()", "avalon.vrf.configureTable()", "avalon.vrf.verify()"],
+    methods: ["avalon.vrf.roll()", "avalon.vrf.configureLootTable()", "avalon.vrf.getLastDrop()"],
   },
   {
     icon: Coins,
@@ -89,7 +89,7 @@ const modules = [
     description: "Built-in USDT economies via Tether WDK. Entry fees, prizes, in-game purchases, player earnings.",
     color: "text-gold",
     bgColor: "bg-gold/10",
-    methods: ["avalon.economy.createPool()", "avalon.economy.transfer()", "avalon.economy.getBalance()"],
+    methods: ["avalon.economy.stats()", "avalon.economy.deposit()", "avalon.economy.isTokenAccepted()"],
   },
   {
     icon: Cpu,
@@ -117,53 +117,36 @@ yarn add @avalon/sdk`;
 
 const quickStartCode = `import { Avalon } from '@avalon/sdk';
 
-// 1. Initialize Avalon
-const avalon = new Avalon({
-  apiKey: process.env.AVALON_API_KEY,
-  network: 'fuji', // or 'mainnet'
-});
+// 1. Initialize Avalon (connects to Fuji testnet)
+const avalon = new Avalon({ network: 'fuji' });
 
 // 2. Deploy your game on its own Avalanche L1
 const chain = await avalon.l1.deploy({
   name: 'My Epic Game',
-  blockTime: 2, // seconds
-  gasToken: 'GAME',
+  blockTime: 2,
 });
+console.log(\`Chain live: \${chain.rpcUrl}\`);
 
 // 3. Create an AI NPC with ERC-8004 identity
 const npc = await avalon.agents.create({
-  name: 'Aria the Merchant',
+  name: 'Iron Merchant',
   archetype: 'merchant',
-  personality: {
-    greed: 0.6,
-    loyalty: 0.8,
-    curiosity: 0.5,
-  },
-  wallet: { initialBalance: '50 USDT' },
-  behaviors: ['trade', 'negotiate', 'patrol'],
 });
+console.log(\`NPC registered: token #\${npc.tokenId}\`);
 
-// 4. Set up provably fair loot
-await avalon.vrf.configureTable({
-  name: 'legendary-weapons',
-  drops: [
-    { item: 'Frost Blade', rarity: 'epic', weight: 5 },
-    { item: 'Shadow Dagger', rarity: 'rare', weight: 15 },
-    { item: 'Iron Sword', rarity: 'common', weight: 80 },
-  ],
-});
+// 4. Roll for loot (Chainlink VRF v2.5)
+const loot = await avalon.vrf.roll(playerAddress);
+console.log(\`Dropped: \${loot.item.name} (\${loot.rarity})\`);
 
-// 5. Enable stablecoin economy
-await avalon.economy.configure({
-  currency: 'USDT',
-  entryFee: '1.00',
-  prizePool: true,
-  platformFee: 0.025, // 2.5%
-});
+// 5. Check economy stats
+const stats = await avalon.economy.stats();
+console.log(\`Total deposits: \${stats.totalDeposits}\`);
 
-console.log('Game deployed on L1:', chain.chainId);
-console.log('NPC registered:', npc.agentId);
-console.log('Ready for players!');`;
+// That's it! Your game now has:
+// - Its own Avalanche L1 chain
+// - AI NPCs with on-chain wallets
+// - Provably fair loot via Chainlink VRF
+// - Stablecoin economies via Tether WDK`;
 
 const unityCode = `// Unity C# Avalon Plugin
 using Avalon.SDK;

@@ -22,7 +22,9 @@ import { useWallet } from '@/hooks/useWallet';
 import { useVRFLoot } from '@/hooks/useVRFLoot';
 import { useSearchParams } from 'next/navigation';
 import { CHRONOS_NPCS, type ChronosNPCProfile } from '@/ai/npcs/chronos-npcs';
-import { useNPCDialogue, type DialogueMoment } from '@/ai/useNPCDialogue';
+import { type DialogueMoment } from '@/ai/useNPCDialogue';
+import { useSmartDialogue } from '@/ai/useSmartDialogue';
+import type { BattleContext } from '@/ai/SmartDialogue';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { MOVE_LIST, MAX_COINS } from '@/engine/chronos/moves';
 
@@ -86,12 +88,32 @@ function ChronosBattlePage() {
   // VRF Loot hook - real Chainlink VRF with demo fallback
   const vrfLoot = useVRFLoot();
 
-  // NPC dialogue hook + SFX
-  const dialogue = useNPCDialogue(npcProfile);
+  // NPC dialogue hook (smart context-aware) + SFX
+  const dialogue = useSmartDialogue(npcProfile);
   const sfx = useSoundEffects();
   const [showMatchResult, setShowMatchResult] = useState(false);
   const prevEventsLen = useRef(0);
   const firedDialogues = useRef(new Set<string>());
+
+  // Build battle context for smart dialogue
+  const buildContext = useCallback((): BattleContext => ({
+    playerHp: game.player.hp,
+    playerMaxHp: game.player.maxHp,
+    aiHp: game.ai.hp,
+    aiMaxHp: game.ai.maxHp,
+    playerCoins: game.player.coins,
+    aiCoins: game.ai.coins,
+    currentBlock: game.currentBlock,
+    playerMovesInFlight: game.movesInFlight.filter(m => m.owner === 'player').length,
+    aiMovesInFlight: game.movesInFlight.filter(m => m.owner === 'ai').length,
+    lastPlayerMove: undefined,
+    lastAiMove: undefined,
+    playerDamageDealt: game.playerStats.damageDealt,
+    aiDamageDealt: game.aiStats.damageDealt,
+    consecutivePlayerHits: 0,
+    consecutiveAiHits: 0,
+    totalMovesPlayed: game.playerStats.movesPlayed + game.aiStats.movesPlayed,
+  }), [game]);
 
   // Trigger dialogue + SFX on game events
   useEffect(() => {
@@ -117,28 +139,29 @@ function ChronosBattlePage() {
       counter_success: lastEvt.owner === 'ai' ? 'counter_success' : 'counter_whiff',
     };
     const moment = momentMap[lastEvt.type];
-    if (moment) dialogue.trigger(moment);
+    const ctx = buildContext();
+    if (moment) dialogue.trigger(moment, ctx);
 
     // Low HP triggers
     if (game.ai.hp > 0 && game.ai.hp <= game.ai.maxHp * 0.25) {
-      dialogue.trigger('low_hp');
+      dialogue.trigger('low_hp', ctx);
     }
     if (game.player.hp > 0 && game.player.hp <= game.player.maxHp * 0.25) {
-      dialogue.trigger('opponent_low_hp');
+      dialogue.trigger('opponent_low_hp', ctx);
     }
 
     // Once-per-match dialogue triggers
     if (game.player.shieldActive && !firedDialogues.current.has('player_shielding')) {
       firedDialogues.current.add('player_shielding');
-      dialogue.trigger('player_shielding');
+      dialogue.trigger('player_shielding', ctx);
     }
     if (game.ai.coins >= 15 && !firedDialogues.current.has('coin_rich')) {
       firedDialogues.current.add('coin_rich');
-      dialogue.trigger('coin_rich');
+      dialogue.trigger('coin_rich', ctx);
     }
     if ((game.ai.hp - game.player.hp) >= 40 && !firedDialogues.current.has('dominating')) {
       firedDialogues.current.add('dominating');
-      dialogue.trigger('dominating');
+      dialogue.trigger('dominating', ctx);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game.events.length]);
@@ -147,7 +170,7 @@ function ChronosBattlePage() {
   useEffect(() => {
     if (screen === 'playing' && game.currentBlock <= 1) {
       firedDialogues.current.clear();
-      if (npcProfile) dialogue.trigger('match_start');
+      if (npcProfile) dialogue.trigger('match_start', buildContext());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen]);
@@ -158,7 +181,7 @@ function ChronosBattlePage() {
       const isWin = game.winner === 'player';
       sfx.play(isWin ? 'victory' : 'defeat');
       if (npcProfile) {
-        dialogue.trigger(isWin ? 'lose' : 'win');
+        dialogue.trigger(isWin ? 'lose' : 'win', buildContext());
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -589,11 +612,18 @@ function ChronosBattlePage() {
                         &ldquo;{dialogue.currentLine.text}&rdquo;
                       </p>
                     </div>
-                    {aiThinking && (
-                      <span className="text-[9px] font-mono text-text-muted shrink-0">
-                        {Math.round(aiThinking.confidence * 100)}% confident
-                      </span>
-                    )}
+                    <div className="flex flex-col items-end gap-0.5 shrink-0">
+                      {dialogue.isSmartLine && (
+                        <span className="text-[8px] font-mono text-neon-cyan/60">
+                          AI context
+                        </span>
+                      )}
+                      {aiThinking && (
+                        <span className="text-[9px] font-mono text-text-muted">
+                          {Math.round(aiThinking.confidence * 100)}% confident
+                        </span>
+                      )}
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>

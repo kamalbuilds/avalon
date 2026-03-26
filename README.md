@@ -12,13 +12,32 @@ Built for the [Avalanche Build Games 2026](https://www.avax.network/buildgames).
 
 ## What's New
 
-**Chronos Battle is fully playable.** Pick an opponent, fight, earn loot in a single session with no wallet required.
+**Two games now live, proving the SDK works for multiple game types.**
 
+### Avalanche Coinflip (NEW)
+- **Prediction game** at `/play/coinflip`: bet coins, pick HIGH or LOW, powered by Chainlink VRF
+- **Streak multiplier system**: 2x at 3-streak, 3x at 5-streak, 5x at 7-streak
+- **Lucky the Dealer**: ERC-8004 AI NPC dealer with contextual dialogue
+- **Proves the platform thesis**: same SDK contracts, completely different game type
+
+### @avalon/sdk Package (NEW)
+- **Real, typed SDK** in `packages/sdk/` with 4 modules: L1, Agents, VRF, Economy
+- **Contract bindings**: uses viem to call real Fuji testnet contracts
+- **Quickstart example**: 20 lines to integrate blockchain into any game
+- **API docs**: typed interfaces, JSDoc, README with full reference
+
+### AI Context Dialogue Engine (NEW)
+- **Smart NPC dialogue** that references exact game state (HP values, coin counts, move choices)
+- **10 context rules**: critical HP, domination, coin economy, move-specific reactions
+- **5 personality styles**: each archetype responds differently to the same situation
+- **API route** at `/api/npc-dialogue` ready for LLM integration
+
+### Chronos Battle
 - **Battle System** 5 move types (Quick Strike, Power Blow, Devastating Attack, Shield, Counter) with hit sounds, floating damage popups, HP flash effects, and victory confetti on win
-- **5 Autonomous NPCs with ERC-8004 Identity** Each opponent has a radar chart showing traits (aggression, defense, economy, speed, cunning), contextual mid-battle dialogue driven by personality and game state, and unique play styles shaped by 8 personality traits including mood-driven behavior shifts
-- **Chainlink VRF Loot** Real VRF integration with on-chain proof verification. Demo mode uses client-side fallback for instant gameplay; wallet-connected mode calls the deployed LootVRF contract for verifiable fairness
-- **Loot Effects** Speed Rune (-1 block delay), Power Crystal (+5 damage), Shield Fragment (50% damage reduction), Chronos Crown (+2 starting coins) all functional in the game engine
-- **39 Smart Contract Tests** Full Hardhat test suite covering all 5 move types, shield/counter mechanics, prize distribution, cancel/refund, and admin access control
+- **5 Autonomous NPCs with ERC-8004 Identity** Each opponent has a radar chart showing traits, context-aware mid-battle dialogue, and unique play styles shaped by 8 personality traits
+- **Chainlink VRF Loot** Real VRF integration with on-chain proof verification. Demo mode uses client-side fallback for instant gameplay
+- **Loot Effects** Speed Rune, Power Crystal, Shield Fragment, Chronos Crown, all functional in the game engine
+- **39 Smart Contract Tests** Full Hardhat test suite covering all 5 move types, shield/counter mechanics, prize distribution
 - **Judge Demo Mode** Visit `/play/chronos?demo=true` to bypass wallet connection and play instantly
 - **Match History + Leaderboard** Track every match result, damage dealt, coins spent, and loot earned
 

@@ -49,16 +49,22 @@ export default function GamesPage() {
     href: "/play/chronos",
   };
 
+  // Avalanche Coinflip is the second live game
+  const coinflipGame = {
+    id: "coinflip",
+    name: "Avalanche Coinflip",
+    description: "Predict HIGH or LOW. Streaks multiply winnings. Powered by Chainlink VRF for provably fair results.",
+    status: "live" as GameStatus,
+    playerCount: 89,
+    activeMatches: 12,
+    entryFee: "0.50",
+    chainId: 43113,
+    chainName: "Avalanche Fuji",
+    href: "/play/coinflip",
+  };
+
   // Coming soon games
   const comingSoonGames = [
-    {
-      id: "crypto-dungeons",
-      name: "Crypto Dungeons",
-      icon: "\uD83C\uDFF0",
-      description: "Procedurally generated dungeons with ERC-8004 boss NPCs and VRF loot drops.",
-      status: "draft" as GameStatus,
-      accentColor: "#B026FF",
-    },
     {
       id: "avalanche-legends",
       name: "Avalanche Legends",
@@ -133,6 +139,57 @@ export default function GamesPage() {
               </div>
               <div className="shrink-0">
                 <GlowButton variant="cyan" size="lg">
+                  <Gamepad2 className="h-5 w-5" />
+                  Play Now
+                  <ArrowRight className="h-4 w-4" />
+                </GlowButton>
+              </div>
+            </div>
+          </GlowCard>
+        </Link>
+      </motion.div>
+
+      {/* Second Game: Avalanche Coinflip */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15, duration: 0.5 }}
+        className="mt-4"
+      >
+        <Link href={coinflipGame.href}>
+          <GlowCard glowColor="purple" className="group cursor-pointer">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-gold/20 to-neon-purple/20 border border-gold/30">
+                <ArrowUpDown className="h-10 w-10 text-gold" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-3">
+                  <h3 className="text-2xl font-bold group-hover:text-gold transition-colors">
+                    {coinflipGame.name}
+                  </h3>
+                  <Badge variant="success">LIVE</Badge>
+                  <Badge variant="accent">
+                    <Layers className="mr-1 h-3 w-3" />
+                    {coinflipGame.chainName}
+                  </Badge>
+                </div>
+                <p className="mt-2 text-sm text-muted max-w-2xl">{coinflipGame.description}</p>
+                <div className="mt-3 flex items-center gap-6 text-xs text-muted">
+                  <span className="flex items-center gap-1">
+                    <Users className="h-3.5 w-3.5" />
+                    {coinflipGame.playerCount} players
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Activity className="h-3.5 w-3.5" />
+                    {coinflipGame.activeMatches} active
+                  </span>
+                  <span className="flex items-center gap-1 text-gold">
+                    ${coinflipGame.entryFee} USDT entry
+                  </span>
+                </div>
+              </div>
+              <div className="shrink-0">
+                <GlowButton variant="purple" size="lg">
                   <Gamepad2 className="h-5 w-5" />
                   Play Now
                   <ArrowRight className="h-4 w-4" />
