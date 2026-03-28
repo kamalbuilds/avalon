@@ -116,7 +116,7 @@ Data flow: Game dev calls SDK → SDK translates to smart contract calls → Con
 
 **Walk us through the full user journey step by step:**
 Step 1: Developer lands on avalon.gg, sees "Unity builds the graphics. Avalon powers the economy." and clicks "View SDK Docs."
-Step 2: Developer runs `npm install @avalon/sdk` and initializes Avalon with their API key and network (Fuji testnet).
+Step 2: Developer clones the repo, links the SDK via `npm link ./packages/sdk`, and initializes Avalon with their network (Fuji testnet). Full npm publish is planned post-hackathon.
 Step 3: Developer calls `avalon.l1.deploy()` to create their game's own Avalanche L1 with custom block time and gas token  takes 60 seconds.
 Step 4: Developer creates AI NPCs using `avalon.agents.create()`  each NPC gets an ERC-8004 identity, wallet, personality traits, and behavior set.
 Step 5: Developer configures loot tables using `avalon.vrf.configureTable()` with item names, rarities, and drop weights  powered by Chainlink VRF.
