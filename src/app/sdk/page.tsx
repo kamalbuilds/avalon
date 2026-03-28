@@ -109,11 +109,15 @@ const modules = [
   },
 ];
 
-const installCode = `# Install the Avalon SDK
-npm install @avalon/sdk
+const installCode = `# Clone the repo to use the SDK locally (npm publish coming post-hackathon)
+git clone https://github.com/kamalbuilds/avalon.git
+cd avalon/avaforge
 
-# Or with yarn
-yarn add @avalon/sdk`;
+# Install dependencies
+npm install
+
+# The @avalon/sdk package is at packages/sdk/
+# Import directly: import { Avalon } from '../../../packages/sdk'`;
 
 const quickStartCode = `import { Avalon } from '@avalon/sdk';
 
