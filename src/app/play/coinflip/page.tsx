@@ -56,7 +56,7 @@ function CoinflipGame() {
             Avalanche Coinflip
           </h1>
           <p className="text-sm text-muted mt-0.5">
-            Predict HIGH or LOW. Streaks multiply winnings. Powered by Chainlink VRF.
+            Predict HIGH or LOW. Streaks multiply winnings. VRF-ready randomness.
           </p>
         </div>
         <Link href="/games">
@@ -174,10 +174,10 @@ function CoinflipGame() {
                     className="mt-4 text-center"
                   >
                     <div className="text-lg font-bold text-purple-400 animate-pulse">
-                      Generating VRF random number...
+                      Flipping coin...
                     </div>
                     <div className="text-xs text-muted mt-1">
-                      Chainlink VRF v2.5 on Avalanche Fuji
+                      Outcome recorded on Avalanche Fuji
                     </div>
                   </motion.div>
                 )}
@@ -383,11 +383,11 @@ function CoinflipGame() {
 
           {/* VRF Info */}
           <Card className="p-3 border-neon-cyan/20">
-            <div className="text-[10px] text-neon-cyan/60 uppercase tracking-wider mb-1">Provably Fair</div>
+            <div className="text-[10px] text-neon-cyan/60 uppercase tracking-wider mb-1">VRF-Ready</div>
             <p className="text-[11px] text-muted">
-              Every flip uses Chainlink VRF v2.5 for verifiable randomness.
+              Designed to use Chainlink VRF v2.5 for verifiable randomness.
               Results are recorded on Avalanche Fuji testnet.
-              Players can verify every outcome on-chain.
+              Full VRF integration available once subscription is configured.
             </p>
           </Card>
         </div>
